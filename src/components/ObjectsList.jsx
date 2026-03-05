@@ -47,7 +47,16 @@ export default function ObjectsList({ objects, onAdd, onSelect, onChangeStatus }
                   <span>📅 {formatDate(obj.createdAt)}</span>
                   {matCount > 0 && <span>📦 {matCount} medž.</span>}
                   {total > 0 && <span>💰 {formatCurrency(total)}</span>}
-                  {(obj.invoices || []).length > 0 && <span>📄 {obj.invoices.length} sąsk.</span>}
+                  {(obj.invoices || []).length > 0 && (
+                    <span className="card-pdf-badge">
+                      <svg width="14" height="16" viewBox="0 0 28 32" fill="none" style={{ verticalAlign: 'middle', marginRight: 3 }}>
+                        <path d="M2 0C0.9 0 0 0.9 0 2V30C0 31.1 0.9 32 2 32H26C27.1 32 28 31.1 28 30V8L20 0H2Z" fill="#E53935"/>
+                        <path d="M21 7V0L28 7H21Z" fill="#FFCDD2"/>
+                        <text x="14" y="22" textAnchor="middle" fill="white" fontSize="8" fontWeight="bold" fontFamily="Arial">PDF</text>
+                      </svg>
+                      {obj.invoices.length} sąsk.
+                    </span>
+                  )}
                 </div>
               </div>
             );
