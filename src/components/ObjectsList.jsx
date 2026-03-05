@@ -47,6 +47,7 @@ export default function ObjectsList({ objects, onAdd, onSelect, onChangeStatus }
                   <span>📅 {formatDate(obj.createdAt)}</span>
                   {matCount > 0 && <span>📦 {matCount} medž.</span>}
                   {total > 0 && <span>💰 {formatCurrency(total)}</span>}
+                  {(obj.invoices || []).length > 0 && <span>📄 {obj.invoices.length} sąsk.</span>}
                 </div>
               </div>
             );

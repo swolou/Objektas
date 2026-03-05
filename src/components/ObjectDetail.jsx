@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { formatDate, formatCurrency, statusLabels } from '../utils';
-import { generateInvoice, loadSellerInfo } from '../invoiceGenerator';
+import { generateInvoice, loadSellerInfo, openInvoicePdf } from '../invoiceGenerator';
 import ConfirmModal from './ConfirmModal';
 
-export default function ObjectDetail({ object, onBack, onEdit, onDelete, onAddMaterial, onEditMaterial, onDeleteMaterial }) {
+export default function ObjectDetail({ object, onBack, onEdit, onDelete, onAddMaterial, onEditMaterial, onDeleteMaterial, onSaveInvoice, onDeleteInvoice }) {
   const [confirmTarget, setConfirmTarget] = useState(null);
   const [showInvoicePrompt, setShowInvoicePrompt] = useState(false);
   const [invoiceNumber, setInvoiceNumber] = useState('');
@@ -24,6 +24,8 @@ export default function ObjectDetail({ object, onBack, onEdit, onDelete, onAddMa
       onDelete(object.id);
     } else if (confirmTarget.type === 'material') {
       onDeleteMaterial(object.id, confirmTarget.matId);
+    } else if (confirmTarget.type === 'invoice') {
+      onDeleteInvoice(object.id, confirmTarget.invoiceId);
     }
     setConfirmTarget(null);
   };
@@ -35,7 +37,8 @@ export default function ObjectDetail({ object, onBack, onEdit, onDelete, onAddMa
 
   const handleConfirmInvoice = () => {
     const seller = loadSellerInfo();
-    generateInvoice(object, seller, invoiceNumber.trim());
+    const invoiceRecord = generateInvoice(object, seller, invoiceNumber.trim());
+    onSaveInvoice(object.id, invoiceRecord);
     setShowInvoicePrompt(false);
   };
 
@@ -163,6 +166,34 @@ export default function ObjectDetail({ object, onBack, onEdit, onDelete, onAddMa
         </button>
       )}
 
+      {(object.invoices || []).length > 0 && (
+        <>
+          <div className="section-header" style={{ marginTop: 20 }}>
+            <h3>Sąskaitos</h3>
+          </div>
+          <div className="list">
+            {object.invoices.map((inv) => (
+              <div className="invoice-card" key={inv.id}>
+                <div className="invoice-icon" onClick={() => openInvoicePdf(inv)} title="Atsisiųsti PDF">
+                  📄
+                </div>
+                <div className="invoice-info" onClick={() => openInvoicePdf(inv)}>
+                  <div className="invoice-number">{inv.number}</div>
+                  <div className="invoice-date">{inv.date}</div>
+                </div>
+                <button
+                  className="material-delete"
+                  onClick={() => {
+                    setConfirmTarget({ type: 'invoice', invoiceId: inv.id });
+                  }}
+                  title="Pašalinti"
+                >✕</button>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
       {showInvoicePrompt && (
         <div className="modal-overlay" onClick={() => setShowInvoicePrompt(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -186,7 +217,7 @@ export default function ObjectDetail({ object, onBack, onEdit, onDelete, onAddMa
 
       {confirmTarget && (
         <ConfirmModal
-          message={confirmTarget.type === 'object' ? 'Ar tikrai norite ištrinti šį objektą?' : 'Pašalinti šią medžiagą?'}
+          message={confirmTarget.type === 'object' ? 'Ar tikrai norite ištrinti šį objektą?' : confirmTarget.type === 'invoice' ? 'Pašalinti šią sąskaitą?' : 'Pašalinti šią medžiagą?'}
           onConfirm={handleConfirm}
           onCancel={() => setConfirmTarget(null)}
         />

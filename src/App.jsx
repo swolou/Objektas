@@ -96,6 +96,28 @@ export default function App() {
     setView('detail');
   };
 
+  const handleSaveInvoice = (objId, invoiceRecord) => {
+    const updated = objects.map((o) => {
+      if (o.id !== objId) return o;
+      return {
+        ...o,
+        invoices: [...(o.invoices || []), invoiceRecord],
+      };
+    });
+    saveObjects(updated);
+  };
+
+  const handleDeleteInvoice = (objId, invoiceId) => {
+    const updated = objects.map((o) => {
+      if (o.id !== objId) return o;
+      return {
+        ...o,
+        invoices: (o.invoices || []).filter((inv) => inv.id !== invoiceId),
+      };
+    });
+    saveObjects(updated);
+  };
+
   const handleDeleteMaterial = (objId, matId) => {
     const updated = objects.map((o) => {
       if (o.id !== objId) return o;
@@ -154,6 +176,8 @@ export default function App() {
           onAddMaterial={handleAddMaterial}
           onEditMaterial={handleEditMaterial}
           onDeleteMaterial={handleDeleteMaterial}
+          onSaveInvoice={handleSaveInvoice}
+          onDeleteInvoice={handleDeleteInvoice}
         />
       )}
 

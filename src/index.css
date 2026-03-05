@@ -433,6 +433,39 @@ header h1 {
   border: 1px solid var(--border);
 }
 
+.invoice-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.invoice-icon {
+  font-size: 28px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.invoice-info {
+  flex: 1;
+  cursor: pointer;
+}
+
+.invoice-number {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.invoice-date {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
 .modal-overlay {
   position: fixed;
   inset: 0;

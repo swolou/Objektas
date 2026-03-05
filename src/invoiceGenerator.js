@@ -173,4 +173,20 @@ export function generateInvoice(object, seller, customInvoiceNumber) {
 
   const fileName = `Saskaita_${object.name || 'objektas'}_${invoiceDate.replace(/\//g, '-')}.pdf`;
   doc.save(fileName);
+
+  const pdfData = doc.output('datauristring');
+  return {
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+    number: invoiceNumber,
+    date: invoiceDate,
+    pdfData,
+    fileName,
+  };
+}
+
+export function openInvoicePdf(invoice) {
+  const link = document.createElement('a');
+  link.href = invoice.pdfData;
+  link.download = invoice.fileName || `Saskaita_${invoice.number}.pdf`;
+  link.click();
 }
