@@ -5,6 +5,7 @@ import ObjectsList from './components/ObjectsList';
 import ObjectForm from './components/ObjectForm';
 import ObjectDetail from './components/ObjectDetail';
 import MaterialForm from './components/MaterialForm';
+import SellerSettings from './components/SellerSettings';
 
 export default function App() {
   const [objects, saveObjects] = useLocalStorage();
@@ -104,7 +105,10 @@ export default function App() {
   return (
     <>
       <header>
-        <h1>⚡ Elektros Objektai</h1>
+        <div className="header-content">
+          <h1>⚡ Elektros Objektai</h1>
+          <button className="header-settings" onClick={() => setView('settings')} title="Nustatymai">⚙️</button>
+        </div>
       </header>
 
       {view === 'list' && (
@@ -140,6 +144,10 @@ export default function App() {
           onSave={handleSaveMaterial}
           onBack={handleBackToDetail}
         />
+      )}
+
+      {view === 'settings' && (
+        <SellerSettings onBack={handleBackToList} />
       )}
     </>
   );

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { formatDate, formatCurrency, statusLabels } from '../utils';
+import { generateInvoice, loadSellerInfo } from '../invoiceGenerator';
 import ConfirmModal from './ConfirmModal';
 
 export default function ObjectDetail({ object, onBack, onEdit, onDelete, onAddMaterial, onDeleteMaterial }) {
@@ -25,6 +26,11 @@ export default function ObjectDetail({ object, onBack, onEdit, onDelete, onAddMa
     setConfirmTarget(null);
   };
 
+  const handleExportInvoice = () => {
+    const seller = loadSellerInfo();
+    generateInvoice(object, seller);
+  };
+
   return (
     <div className="view">
       <div className="toolbar">
@@ -46,20 +52,6 @@ export default function ObjectDetail({ object, onBack, onEdit, onDelete, onAddMa
             <span className="detail-value">{object.address}</span>
           </div>
         )}
-        {object.client && (
-          <div className="detail-row">
-            <span className="detail-label">Klientas</span>
-            <span className="detail-value">{object.client}</span>
-          </div>
-        )}
-        {object.phone && (
-          <div className="detail-row">
-            <span className="detail-label">Telefonas</span>
-            <span className="detail-value">
-              <a href={`tel:${object.phone}`} style={{ color: 'var(--primary)' }}>{object.phone}</a>
-            </span>
-          </div>
-        )}
         <div className="detail-row">
           <span className="detail-label">Statusas</span>
           <span className="detail-value">
@@ -77,6 +69,54 @@ export default function ObjectDetail({ object, onBack, onEdit, onDelete, onAddMa
           <span className="detail-value">{formatDate(object.createdAt)}</span>
         </div>
       </div>
+
+      {(object.client || object.clientCompany) && (
+        <>
+          <div className="section-header">
+            <h3>Užsakovas</h3>
+          </div>
+          <div className="detail-content">
+            {object.clientCompany && (
+              <div className="detail-row">
+                <span className="detail-label">Įmonė</span>
+                <span className="detail-value">{object.clientCompany}</span>
+              </div>
+            )}
+            {object.client && (
+              <div className="detail-row">
+                <span className="detail-label">Kontaktas</span>
+                <span className="detail-value">{object.client}</span>
+              </div>
+            )}
+            {object.clientCode && (
+              <div className="detail-row">
+                <span className="detail-label">Įmonės kodas</span>
+                <span className="detail-value">{object.clientCode}</span>
+              </div>
+            )}
+            {object.clientPvm && (
+              <div className="detail-row">
+                <span className="detail-label">PVM kodas</span>
+                <span className="detail-value">{object.clientPvm}</span>
+              </div>
+            )}
+            {object.clientAddress && (
+              <div className="detail-row">
+                <span className="detail-label">Adresas</span>
+                <span className="detail-value">{object.clientAddress}</span>
+              </div>
+            )}
+            {object.phone && (
+              <div className="detail-row">
+                <span className="detail-label">Telefonas</span>
+                <span className="detail-value">
+                  <a href={`tel:${object.phone}`} style={{ color: 'var(--primary)' }}>{object.phone}</a>
+                </span>
+              </div>
+            )}
+          </div>
+        </>
+      )}
 
       <div className="section-header">
         <h3>Medžiagos</h3>
@@ -107,6 +147,12 @@ export default function ObjectDetail({ object, onBack, onEdit, onDelete, onAddMa
             <div className="materials-total">Viso: {formatCurrency(total)}</div>
           )}
         </>
+      )}
+
+      {materials.length > 0 && (
+        <button className="btn-invoice" onClick={handleExportInvoice}>
+          📄 Eksportuoti sąskaitą (PDF)
+        </button>
       )}
 
       {confirmTarget && (
