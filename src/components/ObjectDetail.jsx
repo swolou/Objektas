@@ -3,7 +3,7 @@ import { formatDate, formatCurrency, statusLabels } from '../utils';
 import { generateInvoice, loadSellerInfo } from '../invoiceGenerator';
 import ConfirmModal from './ConfirmModal';
 
-export default function ObjectDetail({ object, onBack, onEdit, onDelete, onAddMaterial, onDeleteMaterial }) {
+export default function ObjectDetail({ object, onBack, onEdit, onDelete, onAddMaterial, onEditMaterial, onDeleteMaterial }) {
   const [confirmTarget, setConfirmTarget] = useState(null);
 
   const materials = object.materials || [];
@@ -132,7 +132,7 @@ export default function ObjectDetail({ object, onBack, onEdit, onDelete, onAddMa
           <div className="list">
             {materials.map((m) => (
               <div className="material-card" key={m.id}>
-                <div className="material-info">
+                <div className="material-info" onClick={() => onEditMaterial(object.id, m)} style={{ cursor: 'pointer' }}>
                   <div className="material-name">{m.name}</div>
                   <div className="material-details">{m.quantity} {m.unit}</div>
                 </div>

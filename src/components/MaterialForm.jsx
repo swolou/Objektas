@@ -1,12 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-export default function MaterialForm({ onSave, onBack }) {
+export default function MaterialForm({ editingMaterial, onSave, onBack }) {
   const [form, setForm] = useState({
     name: '',
     quantity: '',
     unit: 'vnt',
     price: '',
   });
+
+  useEffect(() => {
+    if (editingMaterial) {
+      setForm({
+        name: editingMaterial.name || '',
+        quantity: editingMaterial.quantity !== undefined ? String(editingMaterial.quantity) : '',
+        unit: editingMaterial.unit || 'vnt',
+        price: editingMaterial.price !== undefined ? String(editingMaterial.price) : '',
+      });
+    } else {
+      setForm({ name: '', quantity: '', unit: 'vnt', price: '' });
+    }
+  }, [editingMaterial]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -27,7 +40,7 @@ export default function MaterialForm({ onSave, onBack }) {
     <div className="view">
       <div className="toolbar">
         <button className="btn-back" onClick={onBack}>← Atgal</button>
-        <h2>Nauja medžiaga</h2>
+        <h2>{editingMaterial ? 'Redaguoti medžiagą' : 'Nauja medžiaga'}</h2>
       </div>
       <form onSubmit={handleSubmit}>
         <div className="form-group">

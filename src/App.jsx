@@ -12,6 +12,7 @@ export default function App() {
   const [view, setView] = useState('list');
   const [currentObjectId, setCurrentObjectId] = useState(null);
   const [editingObject, setEditingObject] = useState(null);
+  const [editingMaterial, setEditingMaterial] = useState(null);
 
   const currentObject = objects.find((o) => o.id === currentObjectId);
 
@@ -65,18 +66,33 @@ export default function App() {
   };
 
   const handleAddMaterial = () => {
+    setEditingMaterial(null);
+    setView('materialForm');
+  };
+
+  const handleEditMaterial = (objId, material) => {
+    setEditingMaterial(material);
     setView('materialForm');
   };
 
   const handleSaveMaterial = (matData) => {
     const updated = objects.map((o) => {
       if (o.id !== currentObjectId) return o;
+      if (editingMaterial) {
+        return {
+          ...o,
+          materials: (o.materials || []).map((m) =>
+            m.id === editingMaterial.id ? { ...m, ...matData } : m
+          ),
+        };
+      }
       return {
         ...o,
         materials: [...(o.materials || []), { id: generateId(), ...matData }],
       };
     });
     saveObjects(updated);
+    setEditingMaterial(null);
     setView('detail');
   };
 
@@ -99,6 +115,7 @@ export default function App() {
 
   const handleBackToDetail = () => {
     setEditingObject(null);
+    setEditingMaterial(null);
     setView('detail');
   };
 
@@ -135,12 +152,14 @@ export default function App() {
           onEdit={handleEditObject}
           onDelete={handleDeleteObject}
           onAddMaterial={handleAddMaterial}
+          onEditMaterial={handleEditMaterial}
           onDeleteMaterial={handleDeleteMaterial}
         />
       )}
 
       {view === 'materialForm' && (
         <MaterialForm
+          editingMaterial={editingMaterial}
           onSave={handleSaveMaterial}
           onBack={handleBackToDetail}
         />
