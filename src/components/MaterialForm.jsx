@@ -30,9 +30,13 @@ export default function MaterialForm({ editingMaterial, onSave, onBack }) {
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [activeSuggestion, setActiveSuggestion] = useState(-1);
-  const [dbItems, setDbItems] = useState(loadMaterialsDb());
+  const [dbItems, setDbItems] = useState([]);
   const [newDbItem, setNewDbItem] = useState('');
   const wrapperRef = useRef(null);
+
+  useEffect(() => {
+    setDbItems(loadMaterialsDb());
+  }, []);
 
   useEffect(() => {
     if (editingMaterial) {
