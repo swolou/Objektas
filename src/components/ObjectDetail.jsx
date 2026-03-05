@@ -3,29 +3,40 @@ import { formatDate, formatCurrency, statusLabels } from '../utils';
 import { generateInvoice, loadSellerInfo, openInvoicePdf } from '../invoiceGenerator';
 import ConfirmModal from './ConfirmModal';
 
-export default function ObjectDetail({ object, onBack, onEdit, onDelete, onAddMaterial, onEditMaterial, onDeleteMaterial, onSaveInvoice, onDeleteInvoice }) {
+export default function ObjectDetail({
+  object, onBack, onEdit, onDelete,
+  onAddDay, onDeleteDay,
+  onAddMaterial, onEditMaterial, onDeleteMaterial,
+  onSaveInvoice, onDeleteInvoice
+}) {
   const [confirmTarget, setConfirmTarget] = useState(null);
   const [showInvoicePrompt, setShowInvoicePrompt] = useState(false);
   const [invoiceNumber, setInvoiceNumber] = useState('');
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [newDate, setNewDate] = useState('');
+  const [collapsedDays, setCollapsedDays] = useState({});
 
-  const materials = object.materials || [];
-  const total = materials.reduce((s, m) => s + (m.price || 0) * (m.quantity || 0), 0);
+  const days = (object.days || []).sort((a, b) => b.date.localeCompare(a.date));
+  const allMaterials = days.flatMap((d) => d.materials || []);
+  const hasAnyMaterials = allMaterials.length > 0;
+
+  const toggleDay = (dayId) => {
+    setCollapsedDays((prev) => ({ ...prev, [dayId]: !prev[dayId] }));
+  };
 
   const handleDeleteObject = () => {
     setConfirmTarget({ type: 'object' });
-  };
-
-  const handleDeleteMaterial = (matId) => {
-    setConfirmTarget({ type: 'material', matId });
   };
 
   const handleConfirm = () => {
     if (confirmTarget.type === 'object') {
       onDelete(object.id);
     } else if (confirmTarget.type === 'material') {
-      onDeleteMaterial(object.id, confirmTarget.matId);
+      onDeleteMaterial(object.id, confirmTarget.dayId, confirmTarget.matId);
     } else if (confirmTarget.type === 'invoice') {
       onDeleteInvoice(object.id, confirmTarget.invoiceId);
+    } else if (confirmTarget.type === 'day') {
+      onDeleteDay(object.id, confirmTarget.dayId);
     }
     setConfirmTarget(null);
   };
@@ -37,9 +48,34 @@ export default function ObjectDetail({ object, onBack, onEdit, onDelete, onAddMa
 
   const handleConfirmInvoice = () => {
     const seller = loadSellerInfo();
-    const invoiceRecord = generateInvoice(object, seller, invoiceNumber.trim());
+    const objWithAllMaterials = {
+      ...object,
+      materials: allMaterials,
+    };
+    const invoiceRecord = generateInvoice(objWithAllMaterials, seller, invoiceNumber.trim());
     onSaveInvoice(object.id, invoiceRecord);
     setShowInvoicePrompt(false);
+  };
+
+  const handleAddDay = () => {
+    const today = new Date().toISOString().split('T')[0];
+    setNewDate(today);
+    setShowDatePicker(true);
+  };
+
+  const handleConfirmAddDay = () => {
+    if (newDate) {
+      onAddDay(object.id, newDate);
+    }
+    setShowDatePicker(false);
+  };
+
+  const getConfirmMessage = () => {
+    if (!confirmTarget) return '';
+    if (confirmTarget.type === 'object') return 'Ar tikrai norite ištrinti šį objektą?';
+    if (confirmTarget.type === 'day') return 'Pašalinti šią dieną su visomis medžiagomis?';
+    if (confirmTarget.type === 'invoice') return 'Pašalinti šią sąskaitą?';
+    return 'Pašalinti šią medžiagą?';
   };
 
   return (
@@ -138,37 +174,71 @@ export default function ObjectDetail({ object, onBack, onEdit, onDelete, onAddMa
       )}
 
       <div className="section-header">
-        <h3>Medžiagos</h3>
-        <button className="btn-small" onClick={() => onAddMaterial(object.id)}>+ Pridėti</button>
+        <h3>Dienos</h3>
+        <button className="btn-small" onClick={handleAddDay}>+ Pridėti dieną</button>
       </div>
 
-      {materials.length === 0 ? (
+      {days.length === 0 ? (
         <div className="empty-state small">
-          <p>Nėra medžiagų</p>
+          <p>Nėra dienų</p>
+          <p className="hint">Pridėkite dieną, kad galėtumėte registruoti medžiagas</p>
         </div>
       ) : (
-        <>
-          <div className="list">
-            {materials.map((m) => (
-              <div className="material-card" key={m.id}>
-                <div className="material-info" onClick={() => onEditMaterial(object.id, m)} style={{ cursor: 'pointer' }}>
-                  <div className="material-name">{m.name}</div>
-                  <div className="material-details">{m.quantity} {m.unit}</div>
+        <div className="days-list">
+          {days.map((day) => {
+            const dayMaterials = day.materials || [];
+            const isCollapsed = collapsedDays[day.id];
+            return (
+              <div className="day-card" key={day.id}>
+                <div className="day-header" onClick={() => toggleDay(day.id)}>
+                  <div className="day-title">
+                    <span className="day-arrow">{isCollapsed ? '▶' : '▼'}</span>
+                    <span className="day-date">📅 {day.date}</span>
+                    <span className="day-count">{dayMaterials.length} medž.</span>
+                  </div>
+                  <div className="day-actions">
+                    <button
+                      className="btn-small"
+                      onClick={(e) => { e.stopPropagation(); onAddMaterial(day.id); }}
+                    >+</button>
+                    <button
+                      className="material-delete"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setConfirmTarget({ type: 'day', dayId: day.id });
+                      }}
+                      title="Pašalinti dieną"
+                    >✕</button>
+                  </div>
                 </div>
-                {m.price > 0 && (
-                  <span className="material-price">{formatCurrency(m.price * m.quantity)}</span>
+                {!isCollapsed && (
+                  <div className="day-materials">
+                    {dayMaterials.length === 0 ? (
+                      <div className="day-empty">Nėra medžiagų</div>
+                    ) : (
+                      dayMaterials.map((m) => (
+                        <div className="material-card-compact" key={m.id}>
+                          <div className="material-info" onClick={() => onEditMaterial(day.id, m)} style={{ cursor: 'pointer' }}>
+                            <span className="material-name">{m.name}</span>
+                            <span className="material-qty">{m.quantity} m</span>
+                          </div>
+                          <button
+                            className="material-delete"
+                            onClick={() => setConfirmTarget({ type: 'material', dayId: day.id, matId: m.id })}
+                            title="Pašalinti"
+                          >✕</button>
+                        </div>
+                      ))
+                    )}
+                  </div>
                 )}
-                <button className="material-delete" onClick={() => handleDeleteMaterial(m.id)} title="Pašalinti">✕</button>
               </div>
-            ))}
-          </div>
-          {total > 0 && (
-            <div className="materials-total">Viso: {formatCurrency(total)}</div>
-          )}
-        </>
+            );
+          })}
+        </div>
       )}
 
-      {materials.length > 0 && (
+      {hasAnyMaterials && (
         <button className="btn-invoice" onClick={handleExportInvoice}>
           📄 Eksportuoti sąskaitą (PDF)
         </button>
@@ -209,15 +279,33 @@ export default function ObjectDetail({ object, onBack, onEdit, onDelete, onAddMa
                 )}
                 <button
                   className="material-delete"
-                  onClick={() => {
-                    setConfirmTarget({ type: 'invoice', invoiceId: inv.id });
-                  }}
+                  onClick={() => setConfirmTarget({ type: 'invoice', invoiceId: inv.id })}
                   title="Pašalinti"
                 >✕</button>
               </div>
             ))}
           </div>
         </>
+      )}
+
+      {showDatePicker && (
+        <div className="modal-overlay" onClick={() => setShowDatePicker(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <p style={{ fontWeight: 600 }}>Pasirinkite datą</p>
+            <div className="form-group" style={{ marginBottom: 16 }}>
+              <input
+                type="date"
+                value={newDate}
+                onChange={(e) => setNewDate(e.target.value)}
+                autoFocus
+              />
+            </div>
+            <div className="modal-actions">
+              <button className="btn-secondary" onClick={() => setShowDatePicker(false)}>Atšaukti</button>
+              <button className="btn-primary" onClick={handleConfirmAddDay}>Pridėti</button>
+            </div>
+          </div>
+        </div>
       )}
 
       {showInvoicePrompt && (
@@ -243,7 +331,7 @@ export default function ObjectDetail({ object, onBack, onEdit, onDelete, onAddMa
 
       {confirmTarget && (
         <ConfirmModal
-          message={confirmTarget.type === 'object' ? 'Ar tikrai norite ištrinti šį objektą?' : confirmTarget.type === 'invoice' ? 'Pašalinti šią sąskaitą?' : 'Pašalinti šią medžiagą?'}
+          message={getConfirmMessage()}
           onConfirm={handleConfirm}
           onCancel={() => setConfirmTarget(null)}
         />

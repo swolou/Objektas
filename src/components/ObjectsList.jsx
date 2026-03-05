@@ -49,8 +49,10 @@ export default function ObjectsList({ objects, onAdd, onSelect, onChangeStatus }
       ) : (
         <div className="list">
           {sorted.map((obj) => {
-            const matCount = (obj.materials || []).length;
-            const total = (obj.materials || []).reduce(
+            const allMats = (obj.days || []).flatMap((d) => d.materials || []);
+            const legacyMats = obj.materials || [];
+            const matCount = allMats.length + legacyMats.length;
+            const total = [...allMats, ...legacyMats].reduce(
               (s, m) => s + (m.price || 0) * (m.quantity || 0), 0
             );
             return (
@@ -73,6 +75,7 @@ export default function ObjectsList({ objects, onAdd, onSelect, onChangeStatus }
                 )}
                 <div className="card-info">
                   <span>📅 {formatDate(obj.createdAt)}</span>
+                  {(obj.days || []).length > 0 && <span>📅 {(obj.days || []).length} d.</span>}
                   {matCount > 0 && <span>📦 {matCount} medž.</span>}
                   {total > 0 && <span>💰 {formatCurrency(total)}</span>}
                   {(obj.invoices || []).length > 0 && (

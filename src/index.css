@@ -399,6 +399,101 @@ header h1 {
   font-weight: 700;
 }
 
+.days-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.day-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.day-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  cursor: pointer;
+  background: #f0fdf4;
+  border-bottom: 1px solid var(--border);
+  user-select: none;
+}
+
+.day-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.day-arrow {
+  font-size: 10px;
+  color: var(--text-secondary);
+  width: 14px;
+}
+
+.day-date {
+  font-size: 14px;
+}
+
+.day-count {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.day-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.day-materials {
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.day-empty {
+  font-size: 13px;
+  color: var(--text-secondary);
+  padding: 4px 6px;
+}
+
+.material-card-compact {
+  display: flex;
+  align-items: center;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+}
+
+.material-card-compact .material-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.material-card-compact .material-name {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.material-card-compact .material-qty {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
 .material-card {
   background: var(--card);
   border-radius: var(--radius);

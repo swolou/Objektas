@@ -11,6 +11,7 @@ export default function App() {
   const [objects, saveObjects] = useLocalStorage();
   const [view, setView] = useState('list');
   const [currentObjectId, setCurrentObjectId] = useState(null);
+  const [currentDayId, setCurrentDayId] = useState(null);
   const [editingObject, setEditingObject] = useState(null);
   const [editingMaterial, setEditingMaterial] = useState(null);
 
@@ -39,6 +40,7 @@ export default function App() {
       const newObj = {
         id: generateId(),
         ...data,
+        days: [],
         materials: [],
         createdAt: Date.now(),
       };
@@ -65,12 +67,39 @@ export default function App() {
     setView('list');
   };
 
-  const handleAddMaterial = () => {
+  const handleAddDay = (objId, dateStr) => {
+    const updated = objects.map((o) => {
+      if (o.id !== objId) return o;
+      const days = o.days || [];
+      const existing = days.find((d) => d.date === dateStr);
+      if (existing) return o;
+      return {
+        ...o,
+        days: [...days, { id: generateId(), date: dateStr, materials: [] }],
+      };
+    });
+    saveObjects(updated);
+  };
+
+  const handleDeleteDay = (objId, dayId) => {
+    const updated = objects.map((o) => {
+      if (o.id !== objId) return o;
+      return {
+        ...o,
+        days: (o.days || []).filter((d) => d.id !== dayId),
+      };
+    });
+    saveObjects(updated);
+  };
+
+  const handleAddMaterial = (dayId) => {
+    setCurrentDayId(dayId);
     setEditingMaterial(null);
     setView('materialForm');
   };
 
-  const handleEditMaterial = (objId, material) => {
+  const handleEditMaterial = (dayId, material) => {
+    setCurrentDayId(dayId);
     setEditingMaterial(material);
     setView('materialForm');
   };
@@ -78,22 +107,42 @@ export default function App() {
   const handleSaveMaterial = (matData) => {
     const updated = objects.map((o) => {
       if (o.id !== currentObjectId) return o;
-      if (editingMaterial) {
+      const days = (o.days || []).map((d) => {
+        if (d.id !== currentDayId) return d;
+        if (editingMaterial) {
+          return {
+            ...d,
+            materials: d.materials.map((m) =>
+              m.id === editingMaterial.id ? { ...m, ...matData } : m
+            ),
+          };
+        }
         return {
-          ...o,
-          materials: (o.materials || []).map((m) =>
-            m.id === editingMaterial.id ? { ...m, ...matData } : m
-          ),
+          ...d,
+          materials: [...d.materials, { id: generateId(), ...matData }],
         };
-      }
-      return {
-        ...o,
-        materials: [...(o.materials || []), { id: generateId(), ...matData }],
-      };
+      });
+      return { ...o, days };
     });
     saveObjects(updated);
     setEditingMaterial(null);
+    setCurrentDayId(null);
     setView('detail');
+  };
+
+  const handleDeleteMaterial = (objId, dayId, matId) => {
+    const updated = objects.map((o) => {
+      if (o.id !== objId) return o;
+      const days = (o.days || []).map((d) => {
+        if (d.id !== dayId) return d;
+        return {
+          ...d,
+          materials: d.materials.filter((m) => m.id !== matId),
+        };
+      });
+      return { ...o, days };
+    });
+    saveObjects(updated);
   };
 
   const handleSaveInvoice = (objId, invoiceRecord) => {
@@ -118,26 +167,17 @@ export default function App() {
     saveObjects(updated);
   };
 
-  const handleDeleteMaterial = (objId, matId) => {
-    const updated = objects.map((o) => {
-      if (o.id !== objId) return o;
-      return {
-        ...o,
-        materials: (o.materials || []).filter((m) => m.id !== matId),
-      };
-    });
-    saveObjects(updated);
-  };
-
   const handleBackToList = () => {
     setCurrentObjectId(null);
     setEditingObject(null);
+    setCurrentDayId(null);
     setView('list');
   };
 
   const handleBackToDetail = () => {
     setEditingObject(null);
     setEditingMaterial(null);
+    setCurrentDayId(null);
     setView('detail');
   };
 
@@ -173,6 +213,8 @@ export default function App() {
           onBack={handleBackToList}
           onEdit={handleEditObject}
           onDelete={handleDeleteObject}
+          onAddDay={handleAddDay}
+          onDeleteDay={handleDeleteDay}
           onAddMaterial={handleAddMaterial}
           onEditMaterial={handleEditMaterial}
           onDeleteMaterial={handleDeleteMaterial}
