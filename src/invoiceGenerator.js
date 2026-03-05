@@ -15,7 +15,7 @@ export function saveSellerInfo(info) {
   localStorage.setItem(SELLER_STORAGE_KEY, JSON.stringify(info));
 }
 
-export function generateInvoice(object, seller) {
+export function generateInvoice(object, seller, customInvoiceNumber) {
   const doc = new jsPDF('p', 'mm', 'a4');
   const pageWidth = 210;
   const margin = 20;
@@ -27,7 +27,7 @@ export function generateInvoice(object, seller) {
   doc.text('SASKAITA FAKTURA', pageWidth / 2, y, { align: 'center' });
   y += 8;
 
-  const invoiceNumber = `SF-${new Date().getFullYear()}-${String(Date.now()).slice(-6)}`;
+  const invoiceNumber = customInvoiceNumber || `SF-${new Date().getFullYear()}-${String(Date.now()).slice(-6)}`;
   const invoiceDate = new Date().toLocaleDateString('lt-LT');
 
   doc.setFont('helvetica', 'normal');

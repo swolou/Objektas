@@ -5,6 +5,8 @@ import ConfirmModal from './ConfirmModal';
 
 export default function ObjectDetail({ object, onBack, onEdit, onDelete, onAddMaterial, onEditMaterial, onDeleteMaterial }) {
   const [confirmTarget, setConfirmTarget] = useState(null);
+  const [showInvoicePrompt, setShowInvoicePrompt] = useState(false);
+  const [invoiceNumber, setInvoiceNumber] = useState('');
 
   const materials = object.materials || [];
   const total = materials.reduce((s, m) => s + (m.price || 0) * (m.quantity || 0), 0);
@@ -27,8 +29,14 @@ export default function ObjectDetail({ object, onBack, onEdit, onDelete, onAddMa
   };
 
   const handleExportInvoice = () => {
+    setInvoiceNumber('');
+    setShowInvoicePrompt(true);
+  };
+
+  const handleConfirmInvoice = () => {
     const seller = loadSellerInfo();
-    generateInvoice(object, seller);
+    generateInvoice(object, seller, invoiceNumber.trim());
+    setShowInvoicePrompt(false);
   };
 
   return (
@@ -153,6 +161,27 @@ export default function ObjectDetail({ object, onBack, onEdit, onDelete, onAddMa
         <button className="btn-invoice" onClick={handleExportInvoice}>
           📄 Eksportuoti sąskaitą (PDF)
         </button>
+      )}
+
+      {showInvoicePrompt && (
+        <div className="modal-overlay" onClick={() => setShowInvoicePrompt(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <p style={{ fontWeight: 600 }}>Sąskaitos numeris</p>
+            <div className="form-group" style={{ marginBottom: 16 }}>
+              <input
+                type="text"
+                value={invoiceNumber}
+                onChange={(e) => setInvoiceNumber(e.target.value)}
+                placeholder="pvz. SF-2026-001"
+                autoFocus
+              />
+            </div>
+            <div className="modal-actions">
+              <button className="btn-secondary" onClick={() => setShowInvoicePrompt(false)}>Atšaukti</button>
+              <button className="btn-primary" onClick={handleConfirmInvoice}>Eksportuoti</button>
+            </div>
+          </div>
+        </div>
       )}
 
       {confirmTarget && (
