@@ -466,6 +466,21 @@ header h1 {
   margin-top: 2px;
 }
 
+.btn-send-email {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.btn-send-email:active {
+  background: var(--border);
+}
+
 .modal-overlay {
   position: fixed;
   inset: 0;

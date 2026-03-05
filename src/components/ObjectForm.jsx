@@ -9,6 +9,7 @@ export default function ObjectForm({ editingObject, onSave, onBack }) {
     clientCode: '',
     clientPvm: '',
     clientAddress: '',
+    clientEmail: '',
     phone: '',
     status: 'naujas',
     notes: '',
@@ -24,6 +25,7 @@ export default function ObjectForm({ editingObject, onSave, onBack }) {
         clientCode: editingObject.clientCode || '',
         clientPvm: editingObject.clientPvm || '',
         clientAddress: editingObject.clientAddress || '',
+        clientEmail: editingObject.clientEmail || '',
         phone: editingObject.phone || '',
         status: editingObject.status || 'naujas',
         notes: editingObject.notes || '',
@@ -31,7 +33,7 @@ export default function ObjectForm({ editingObject, onSave, onBack }) {
     } else {
       setForm({
         name: '', address: '', client: '', clientCompany: '', clientCode: '',
-        clientPvm: '', clientAddress: '', phone: '', status: 'naujas', notes: '',
+        clientPvm: '', clientAddress: '', clientEmail: '', phone: '', status: 'naujas', notes: '',
       });
     }
   }, [editingObject]);
@@ -51,6 +53,7 @@ export default function ObjectForm({ editingObject, onSave, onBack }) {
       clientCode: form.clientCode.trim(),
       clientPvm: form.clientPvm.trim(),
       clientAddress: form.clientAddress.trim(),
+      clientEmail: form.clientEmail.trim(),
       phone: form.phone.trim(),
       status: form.status,
       notes: form.notes.trim(),
@@ -113,6 +116,11 @@ export default function ObjectForm({ editingObject, onSave, onBack }) {
           <label htmlFor="clientAddress">Užsakovo adresas</label>
           <input id="clientAddress" name="clientAddress" value={form.clientAddress} onChange={handleChange}
             placeholder="Užsakovo adresas" />
+        </div>
+        <div className="form-group">
+          <label htmlFor="clientEmail">El. paštas</label>
+          <input id="clientEmail" name="clientEmail" type="email" value={form.clientEmail} onChange={handleChange}
+            placeholder="El. pašto adresas" />
         </div>
         <div className="form-group">
           <label htmlFor="phone">Telefonas</label>

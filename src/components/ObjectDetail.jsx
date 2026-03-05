@@ -117,6 +117,14 @@ export default function ObjectDetail({ object, onBack, onEdit, onDelete, onAddMa
                 <span className="detail-value">{object.clientAddress}</span>
               </div>
             )}
+            {object.clientEmail && (
+              <div className="detail-row">
+                <span className="detail-label">El. paštas</span>
+                <span className="detail-value">
+                  <a href={`mailto:${object.clientEmail}`} style={{ color: 'var(--primary)' }}>{object.clientEmail}</a>
+                </span>
+              </div>
+            )}
             {object.phone && (
               <div className="detail-row">
                 <span className="detail-label">Telefonas</span>
@@ -185,6 +193,20 @@ export default function ObjectDetail({ object, onBack, onEdit, onDelete, onAddMa
                   <div className="invoice-number">{inv.number}</div>
                   <div className="invoice-date">{inv.date}</div>
                 </div>
+                {object.clientEmail && (
+                  <button
+                    className="btn-send-email"
+                    onClick={() => {
+                      openInvoicePdf(inv);
+                      const subject = encodeURIComponent(`Sąskaita faktūra ${inv.number}`);
+                      const body = encodeURIComponent(
+                        `Laba diena,\n\nSiunčiu sąskaitą faktūrą Nr. ${inv.number}.\nPrašome rasti ją prisegtuose dokumentuose.\n\nPagarbiai`
+                      );
+                      window.open(`mailto:${object.clientEmail}?subject=${subject}&body=${body}`, '_blank');
+                    }}
+                    title="Siųsti el. paštu"
+                  >✉️</button>
+                )}
                 <button
                   className="material-delete"
                   onClick={() => {
