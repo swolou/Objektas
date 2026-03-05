@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { formatDate, formatCurrency, statusLabels } from '../utils';
-import { generateInvoice, loadSellerInfo, openInvoicePdf } from '../invoiceGenerator';
+import { generateInvoice, loadSellerInfo, openInvoicePdf, generateMaterialsSummaryPdf } from '../invoiceGenerator';
 import ConfirmModal from './ConfirmModal';
 
 export default function ObjectDetail({
@@ -15,8 +15,6 @@ export default function ObjectDetail({
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [newDate, setNewDate] = useState('');
   const [collapsedDays, setCollapsedDays] = useState({});
-  const [showSummary, setShowSummary] = useState(false);
-
   const days = (object.days || []).sort((a, b) => b.date.localeCompare(a.date));
   const allMaterials = days.flatMap((d) => d.materials || []);
   const hasAnyMaterials = allMaterials.length > 0;
@@ -254,7 +252,7 @@ export default function ObjectDetail({
 
       {hasAnyMaterials && (
         <>
-          <button className="btn-summary" onClick={() => setShowSummary(true)}>
+          <button className="btn-summary" onClick={() => generateMaterialsSummaryPdf(object, aggregatedMaterials())}>
             📋 Formuoti bendrą medžiagų kiekį
           </button>
           <button className="btn-invoice" onClick={handleExportInvoice}>
@@ -343,25 +341,6 @@ export default function ObjectDetail({
             <div className="modal-actions">
               <button className="btn-secondary" onClick={() => setShowInvoicePrompt(false)}>Atšaukti</button>
               <button className="btn-primary" onClick={handleConfirmInvoice}>Eksportuoti</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {showSummary && (
-        <div className="modal-overlay" onClick={() => setShowSummary(false)}>
-          <div className="modal-content modal-wide" onClick={(e) => e.stopPropagation()}>
-            <p style={{ fontWeight: 700, fontSize: 16, marginBottom: 12 }}>📋 Bendras medžiagų kiekis</p>
-            <div className="summary-list">
-              {aggregatedMaterials().map((m, i) => (
-                <div className="summary-row" key={i}>
-                  <span className="summary-name">{m.name}</span>
-                  <span className="summary-qty">{m.quantity} m</span>
-                </div>
-              ))}
-            </div>
-            <div className="modal-actions" style={{ marginTop: 16 }}>
-              <button className="btn-primary btn-full" onClick={() => setShowSummary(false)}>Uždaryti</button>
             </div>
           </div>
         </div>

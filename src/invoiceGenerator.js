@@ -184,6 +184,93 @@ export function generateInvoice(object, seller, customInvoiceNumber) {
   };
 }
 
+export function generateMaterialsSummaryPdf(object, aggregatedMaterials) {
+  const doc = new jsPDF('p', 'mm', 'a4');
+  const pageWidth = 210;
+  const margin = 20;
+  const contentWidth = pageWidth - margin * 2;
+  let y = 20;
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(16);
+  doc.text('MEDZIAGU SUVESTINE', pageWidth / 2, y, { align: 'center' });
+  y += 10;
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(10);
+  const dateStr = new Date().toLocaleDateString('lt-LT');
+  doc.text(`Data: ${dateStr}`, pageWidth / 2, y, { align: 'center' });
+  y += 10;
+
+  if (object.name) {
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(11);
+    doc.text(`Objektas: ${object.name}`, margin, y);
+    y += 6;
+  }
+  if (object.address) {
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.text(`Adresas: ${object.address}`, margin, y);
+    y += 6;
+  }
+  if (object.client || object.clientCompany) {
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    const clientName = object.clientCompany || object.client;
+    doc.text(`Uzsakovas: ${clientName}`, margin, y);
+    y += 6;
+  }
+
+  y += 6;
+
+  const colNr = margin;
+  const colName = margin + 12;
+  const colQty = margin + contentWidth - 10;
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(10);
+  doc.setDrawColor(100);
+  doc.setLineWidth(0.3);
+  doc.line(margin, y, margin + contentWidth, y);
+  y += 5;
+
+  doc.text('Nr.', colNr, y);
+  doc.text('Pavadinimas', colName, y);
+  doc.text('Kiekis', colQty, y, { align: 'right' });
+  y += 2;
+  doc.line(margin, y, margin + contentWidth, y);
+  y += 5;
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(10);
+
+  aggregatedMaterials.forEach((m, idx) => {
+    if (y > 270) {
+      doc.addPage();
+      y = 20;
+    }
+    doc.text(String(idx + 1), colNr, y);
+
+    const nameLines = doc.splitTextToSize(m.name || '', 120);
+    nameLines.forEach((line, li) => {
+      doc.text(line, colName, y + li * 5);
+    });
+
+    doc.text(`${m.quantity} m`, colQty, y, { align: 'right' });
+    y += Math.max(nameLines.length * 5, 6) + 2;
+  });
+
+  doc.line(margin, y, margin + contentWidth, y);
+  y += 7;
+
+  doc.setFont('helvetica', 'bold');
+  doc.text(`Viso poziciju: ${aggregatedMaterials.length}`, margin, y);
+
+  const fileName = `Medziagos_${object.name || 'objektas'}_${dateStr.replace(/\//g, '-')}.pdf`;
+  doc.save(fileName);
+}
+
 export function openInvoicePdf(invoice) {
   const link = document.createElement('a');
   link.href = invoice.pdfData;
