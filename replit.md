@@ -1,6 +1,6 @@
 # Elektros Objektai
 
-Mobiliesiems pritaikyta aplikacija elektrikams, skirta registruoti darbo objektus ir naudojamas medžiagas.
+Mobiliesiems pritaikyta React aplikacija elektrikams, skirta registruoti darbo objektus ir naudojamas medžiagas.
 
 ## Funkcijos
 - Objektų pridėjimas / redagavimas / šalinimas
@@ -11,13 +11,21 @@ Mobiliesiems pritaikyta aplikacija elektrikams, skirta registruoti darbo objektu
 - Duomenys saugomi naršyklės localStorage
 
 ## Technologijos
-- Vanilla HTML/CSS/JS
+- React 19
 - Vite (dev server, port 5000)
 - localStorage duomenų saugojimui
 - Mobiliam dizainui pritaikytas (max-width: 480px)
 
 ## Failų struktūra
 - `index.html` — pagrindinis HTML failas
-- `style.css` — stiliai (mobile-first)
-- `script.js` — visa aplikacijos logika
-- `vite.config.js` — Vite konfigūracija
+- `src/main.jsx` — React entry point
+- `src/App.jsx` — pagrindinė App logika ir navigacija
+- `src/index.css` — visi stiliai
+- `src/utils.js` — pagalbinės funkcijos (formatDate, formatCurrency, generateId)
+- `src/hooks/useLocalStorage.js` — localStorage hook
+- `src/components/ObjectsList.jsx` — objektų sąrašo komponentas
+- `src/components/ObjectForm.jsx` — objekto kūrimo/redagavimo forma
+- `src/components/ObjectDetail.jsx` — objekto detalės ir medžiagų sąrašas
+- `src/components/MaterialForm.jsx` — medžiagos pridėjimo forma
+- `src/components/ConfirmModal.jsx` — patvirtinimo modalas
+- `vite.config.js` — Vite + React konfigūracija

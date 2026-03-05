@@ -9,7 +9,6 @@
   --primary: #2563eb;
   --primary-dark: #1d4ed8;
   --danger: #dc2626;
-  --danger-light: #fef2f2;
   --success: #16a34a;
   --warning: #f59e0b;
   --bg: #f1f5f9;
@@ -29,7 +28,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-#app {
+#root {
   max-width: 480px;
   margin: 0 auto;
   padding-bottom: env(safe-area-inset-bottom, 20px);
@@ -50,12 +49,7 @@ header h1 {
 }
 
 .view {
-  display: none;
   padding: 16px 20px;
-}
-
-.view.active {
-  display: block;
 }
 
 .toolbar {
@@ -378,19 +372,15 @@ header h1 {
   border: 1px solid var(--border);
 }
 
-.modal {
-  display: none;
+.modal-overlay {
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.4);
   z-index: 100;
+  display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
-}
-
-.modal.active {
-  display: flex;
 }
 
 .modal-content {
@@ -422,14 +412,14 @@ header h1 {
   cursor: pointer;
 }
 
-.modal-actions .btn-danger {
+.modal-actions .btn-danger-fill {
   background: var(--danger);
   color: white;
   border: none;
 }
 
 @media (max-width: 480px) {
-  #app {
+  #root {
     max-width: 100%;
   }
 }
