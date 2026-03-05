@@ -30,6 +30,8 @@ export default function MaterialForm({ editingMaterial, onSave, onBack }) {
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [activeSuggestion, setActiveSuggestion] = useState(-1);
+  const [dbItems, setDbItems] = useState(loadMaterialsDb());
+  const [newDbItem, setNewDbItem] = useState('');
   const wrapperRef = useRef(null);
 
   useEffect(() => {
@@ -90,6 +92,20 @@ export default function MaterialForm({ editingMaterial, onSave, onBack }) {
     }
   };
 
+  const handleAddToDb = () => {
+    const trimmed = newDbItem.trim();
+    if (!trimmed) return;
+    saveMaterialToDb(trimmed);
+    setDbItems(loadMaterialsDb());
+    setNewDbItem('');
+  };
+
+  const handleDeleteFromDb = (name) => {
+    const db = loadMaterialsDb().filter((n) => n !== name);
+    localStorage.setItem(DB_KEY, JSON.stringify(db));
+    setDbItems(db);
+  };
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -98,6 +114,7 @@ export default function MaterialForm({ editingMaterial, onSave, onBack }) {
     e.preventDefault();
     if (!form.name.trim()) return;
     saveMaterialToDb(form.name);
+    setDbItems(loadMaterialsDb());
     onSave({
       name: form.name.trim(),
       quantity: parseFloat(form.quantity) || 0,
@@ -152,6 +169,34 @@ export default function MaterialForm({ editingMaterial, onSave, onBack }) {
         </div>
         <button type="submit" className="btn-primary btn-full">Išsaugoti medžiagą</button>
       </form>
+
+      <div className="db-section">
+        <div className="section-header">
+          <h3>Medžiagų duomenų bazė</h3>
+        </div>
+        <div className="db-add-row">
+          <input
+            type="text"
+            value={newDbItem}
+            onChange={(e) => setNewDbItem(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddToDb(); } }}
+            placeholder="Naujos medžiagos pavadinimas..."
+          />
+          <button type="button" className="btn-small" onClick={handleAddToDb}>+</button>
+        </div>
+        {dbItems.length === 0 ? (
+          <div className="db-empty">Duomenų bazė tuščia</div>
+        ) : (
+          <div className="db-list">
+            {dbItems.map((item, i) => (
+              <div className="db-item" key={i}>
+                <span>{item}</span>
+                <button className="material-delete" onClick={() => handleDeleteFromDb(item)} title="Pašalinti">✕</button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

@@ -500,6 +500,56 @@ header h1 {
   color: var(--primary-dark);
 }
 
+.db-section {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+.db-add-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.db-add-row input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-family: inherit;
+}
+
+.db-add-row input:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.db-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.db-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.db-empty {
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-align: center;
+  padding: 10px;
+}
+
 .btn-summary {
   width: 100%;
   padding: 13px;
