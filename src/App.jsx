@@ -123,7 +123,7 @@ export default function App() {
     <>
       <header>
         <div className="header-content">
-          <h1>⚡ Elektros Objektai</h1>
+          <h1>⚡ Objektų valdymas</h1>
           <button className="header-settings" onClick={() => setView('settings')} title="Nustatymai">⚙️</button>
         </div>
       </header>
