@@ -175,7 +175,11 @@ export default function ObjectDetail({ object, onBack, onEdit, onDelete, onAddMa
             {object.invoices.map((inv) => (
               <div className="invoice-card" key={inv.id}>
                 <div className="invoice-icon" onClick={() => openInvoicePdf(inv)} title="Atsisiųsti PDF">
-                  📄
+                  <svg width="28" height="32" viewBox="0 0 28 32" fill="none">
+                    <path d="M2 0C0.9 0 0 0.9 0 2V30C0 31.1 0.9 32 2 32H26C27.1 32 28 31.1 28 30V8L20 0H2Z" fill="#E53935"/>
+                    <path d="M21 7V0L28 7H21Z" fill="#FFCDD2"/>
+                    <text x="14" y="22" textAnchor="middle" fill="white" fontSize="8" fontWeight="bold" fontFamily="Arial">PDF</text>
+                  </svg>
                 </div>
                 <div className="invoice-info" onClick={() => openInvoicePdf(inv)}>
                   <div className="invoice-number">{inv.number}</div>
