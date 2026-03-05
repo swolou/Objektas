@@ -1,10 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { formatDate, formatCurrency, statusLabels } from '../utils';
 
 const statusOrder = ['naujas', 'vykdomas', 'uzbaigtas'];
 
 export default function ObjectsList({ objects, onAdd, onSelect, onChangeStatus }) {
-  const sorted = [...objects].sort((a, b) => b.createdAt - a.createdAt);
+  const [search, setSearch] = useState('');
+
+  const filtered = objects.filter((obj) => {
+    if (!search.trim()) return true;
+    const q = search.toLowerCase();
+    return (
+      (obj.name || '').toLowerCase().includes(q) ||
+      (obj.address || '').toLowerCase().includes(q) ||
+      (obj.client || '').toLowerCase().includes(q) ||
+      (obj.clientCompany || '').toLowerCase().includes(q)
+    );
+  });
+
+  const sorted = [...filtered].sort((a, b) => b.createdAt - a.createdAt);
 
   return (
     <div className="view">
@@ -13,10 +26,25 @@ export default function ObjectsList({ objects, onAdd, onSelect, onChangeStatus }
         <button className="btn-primary" onClick={onAdd}>+ Naujas objektas</button>
       </div>
 
+      {objects.length > 0 && (
+        <div className="search-bar">
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="🔍 Ieškoti objekto..."
+          />
+        </div>
+      )}
+
       {objects.length === 0 ? (
         <div className="empty-state">
           <p>Dar nėra objektų</p>
           <p className="hint">Paspauskite „+ Naujas objektas" norėdami pradėti</p>
+        </div>
+      ) : sorted.length === 0 ? (
+        <div className="empty-state small">
+          <p>Nieko nerasta</p>
         </div>
       ) : (
         <div className="list">
