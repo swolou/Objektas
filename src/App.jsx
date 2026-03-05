@@ -50,6 +50,13 @@ export default function App() {
     setView('objectForm');
   };
 
+  const handleChangeStatus = (id, newStatus) => {
+    const updated = objects.map((o) =>
+      o.id === id ? { ...o, status: newStatus } : o
+    );
+    saveObjects(updated);
+  };
+
   const handleDeleteObject = (id) => {
     saveObjects(objects.filter((o) => o.id !== id));
     setCurrentObjectId(null);
@@ -105,6 +112,7 @@ export default function App() {
           objects={objects}
           onAdd={handleAddObject}
           onSelect={handleSelectObject}
+          onChangeStatus={handleChangeStatus}
         />
       )}
 

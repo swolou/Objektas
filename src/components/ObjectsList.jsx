@@ -1,7 +1,9 @@
 import React from 'react';
 import { formatDate, formatCurrency, statusLabels } from '../utils';
 
-export default function ObjectsList({ objects, onAdd, onSelect }) {
+const statusOrder = ['naujas', 'vykdomas', 'uzbaigtas'];
+
+export default function ObjectsList({ objects, onAdd, onSelect, onChangeStatus }) {
   const sorted = [...objects].sort((a, b) => b.createdAt - a.createdAt);
 
   return (
@@ -27,9 +29,16 @@ export default function ObjectsList({ objects, onAdd, onSelect }) {
               <div className="card" key={obj.id} onClick={() => onSelect(obj.id)}>
                 <div className="card-header">
                   <span className="card-name">{obj.name}</span>
-                  <span className={`badge badge-${obj.status}`}>
+                  <button
+                    className={`badge badge-${obj.status} badge-clickable`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const nextIndex = (statusOrder.indexOf(obj.status) + 1) % statusOrder.length;
+                      onChangeStatus(obj.id, statusOrder[nextIndex]);
+                    }}
+                  >
                     {statusLabels[obj.status]}
-                  </span>
+                  </button>
                 </div>
                 {obj.address && (
                   <div className="card-info"><span>📍 {obj.address}</span></div>
