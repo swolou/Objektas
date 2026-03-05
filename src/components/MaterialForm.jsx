@@ -4,8 +4,6 @@ export default function MaterialForm({ editingMaterial, onSave, onBack }) {
   const [form, setForm] = useState({
     name: '',
     quantity: '',
-    unit: 'vnt',
-    price: '',
   });
 
   useEffect(() => {
@@ -13,11 +11,9 @@ export default function MaterialForm({ editingMaterial, onSave, onBack }) {
       setForm({
         name: editingMaterial.name || '',
         quantity: editingMaterial.quantity !== undefined ? String(editingMaterial.quantity) : '',
-        unit: editingMaterial.unit || 'vnt',
-        price: editingMaterial.price !== undefined ? String(editingMaterial.price) : '',
       });
     } else {
-      setForm({ name: '', quantity: '', unit: 'vnt', price: '' });
+      setForm({ name: '', quantity: '' });
     }
   }, [editingMaterial]);
 
@@ -31,8 +27,8 @@ export default function MaterialForm({ editingMaterial, onSave, onBack }) {
     onSave({
       name: form.name.trim(),
       quantity: parseFloat(form.quantity) || 0,
-      unit: form.unit,
-      price: parseFloat(form.price) || 0,
+      unit: 'm',
+      price: 0,
     });
   };
 
@@ -49,24 +45,9 @@ export default function MaterialForm({ editingMaterial, onSave, onBack }) {
             placeholder="pvz. Kabelis YDY 3x2.5..." required />
         </div>
         <div className="form-group">
-          <label htmlFor="mat-quantity">Kiekis *</label>
+          <label htmlFor="mat-quantity">Kiekis (m) *</label>
           <input id="mat-quantity" name="quantity" type="number" step="0.01" min="0"
             value={form.quantity} onChange={handleChange} placeholder="0" required />
-        </div>
-        <div className="form-group">
-          <label htmlFor="mat-unit">Matavimo vienetas</label>
-          <select id="mat-unit" name="unit" value={form.unit} onChange={handleChange}>
-            <option value="vnt">vnt.</option>
-            <option value="m">m</option>
-            <option value="kg">kg</option>
-            <option value="kompl">kompl.</option>
-            <option value="rit">rit.</option>
-          </select>
-        </div>
-        <div className="form-group">
-          <label htmlFor="mat-price">Kaina (€)</label>
-          <input id="mat-price" name="price" type="number" step="0.01" min="0"
-            value={form.price} onChange={handleChange} placeholder="0.00" />
         </div>
         <button type="submit" className="btn-primary btn-full">Išsaugoti medžiagą</button>
       </form>
