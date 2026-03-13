@@ -79,8 +79,15 @@ export default function MaterialForm({ editingMaterial, onSave, onBack }) {
     }
   };
 
+  const getUnitForName = (name) => {
+    const lower = name.toLowerCase();
+    if (kameros.some((k) => k.kameros.toLowerCase() === lower)) return 'Vnt.';
+    if (laidai.some((l) => l.laidai.toLowerCase() === lower)) return 'm';
+    return form.unit;
+  };
+
   const handleSelectSuggestion = (name) => {
-    setForm({ ...form, name });
+    setForm({ ...form, name, unit: getUnitForName(name) });
     setShowSuggestions(false);
     setSuggestions([]);
     setTimeout(() => quantityRef.current?.focus(), 50);
