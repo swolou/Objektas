@@ -158,7 +158,7 @@ export default function App() {
       <header>
         <div className="header-content">
           <h1 style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }} onClick={handleBackToList}>
-            <img src="/logo.png" alt="Emadora" style={{ height: '32px' }} />
+            <img src="/logo.png" alt="Emadora" style={{ height: '64px' }} />
             Objektų valdymas
           </h1>
           <button className="header-settings" onClick={() => setView('settings')} title="Nustatymai">⚙️</button>
