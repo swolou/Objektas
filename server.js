@@ -138,6 +138,10 @@ app.post('/api/dienos/:id/medziagos', async (req, res) => {
       'INSERT INTO medziagos (diena_id, name, quantity) VALUES ($1, $2, $3) RETURNING *',
       [req.params.id, req.body.name, req.body.quantity || 0]
     );
+    const { rows: dayRows } = await pool.query('SELECT objektas_id FROM dienos WHERE id=$1', [req.params.id]);
+    if (dayRows.length > 0) {
+      await pool.query("UPDATE objektas SET status='vykdomas' WHERE id=$1 AND status='naujas'", [dayRows[0].objektas_id]);
+    }
     res.json(rows[0]);
   } catch (err) {
     console.error(err);
@@ -259,6 +263,7 @@ app.post('/api/objektai/:id/rezultatai', async (req, res) => {
       'INSERT INTO rezultatas (objektas_id, data, suma) VALUES ($1, $2, $3) RETURNING *',
       [req.params.id, req.body.data, req.body.suma || 0]
     );
+    await pool.query("UPDATE objektas SET status='užbaigtas' WHERE id=$1", [req.params.id]);
     res.json(rows[0]);
   } catch (err) {
     console.error(err);
