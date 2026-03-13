@@ -263,7 +263,7 @@ app.post('/api/objektai/:id/rezultatai', async (req, res) => {
       'INSERT INTO rezultatas (objektas_id, data, suma) VALUES ($1, $2, $3) RETURNING *',
       [req.params.id, req.body.data, req.body.suma || 0]
     );
-    await pool.query("UPDATE objektas SET status='užbaigtas' WHERE id=$1", [req.params.id]);
+    await pool.query("UPDATE objektas SET status='uzbaigtas' WHERE id=$1", [req.params.id]);
     res.json(rows[0]);
   } catch (err) {
     console.error(err);
