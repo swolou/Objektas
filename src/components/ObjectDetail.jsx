@@ -61,8 +61,8 @@ export default function ObjectDetail({
     setShowInvoicePrompt(true);
   };
 
-  const handleConfirmInvoice = () => {
-    const seller = loadSellerInfo();
+  const handleConfirmInvoice = async () => {
+    const seller = await loadSellerInfo();
     const objWithAllMaterials = {
       ...object,
       materials: allMaterials,

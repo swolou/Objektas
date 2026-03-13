@@ -13,18 +13,21 @@ export default function SellerSettings({ onBack }) {
     account: '',
   });
   const [saved, setSaved] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const info = loadSellerInfo();
-    setForm({
-      company: info.company || '',
-      code: info.code || '',
-      pvmCode: info.pvmCode || '',
-      address: info.address || '',
-      phone: info.phone || '',
-      email: info.email || '',
-      bank: info.bank || '',
-      account: info.account || '',
+    loadSellerInfo().then(info => {
+      setForm({
+        company: info.company || '',
+        code: info.code || '',
+        pvmCode: info.pvmCode || '',
+        address: info.address || '',
+        phone: info.phone || '',
+        email: info.email || '',
+        bank: info.bank || '',
+        account: info.account || '',
+      });
+      setLoading(false);
     });
   }, []);
 
@@ -33,12 +36,14 @@ export default function SellerSettings({ onBack }) {
     setSaved(false);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    saveSellerInfo(form);
+    await saveSellerInfo(form);
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
+
+  if (loading) return <div className="view"><p>Kraunama...</p></div>;
 
   return (
     <div className="view">

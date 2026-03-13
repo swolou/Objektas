@@ -1,18 +1,32 @@
 import jsPDF from 'jspdf';
 import { formatCurrency } from './utils';
 
-const SELLER_STORAGE_KEY = 'elektros_pardavejas';
-
-export function loadSellerInfo() {
+export async function loadSellerInfo() {
   try {
-    return JSON.parse(localStorage.getItem(SELLER_STORAGE_KEY)) || {};
+    const res = await fetch('/api/pardavejas');
+    const data = await res.json();
+    return {
+      company: data.company || '',
+      code: data.code || '',
+      pvmCode: data.pvm_code || '',
+      address: data.address || '',
+      phone: data.phone || '',
+      email: data.email || '',
+      bank: data.bank || '',
+      account: data.account || '',
+    };
   } catch {
     return {};
   }
 }
 
-export function saveSellerInfo(info) {
-  localStorage.setItem(SELLER_STORAGE_KEY, JSON.stringify(info));
+export async function saveSellerInfo(info) {
+  const res = await fetch('/api/pardavejas', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(info),
+  });
+  return res.json();
 }
 
 export function generateInvoice(object, seller, customInvoiceNumber) {

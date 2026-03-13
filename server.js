@@ -276,6 +276,41 @@ app.delete('/api/rezultatai/:id', async (req, res) => {
   }
 });
 
+// --- PARDAVEJAS ---
+
+app.get('/api/pardavejas', async (req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM pardavejas ORDER BY id LIMIT 1');
+    res.json(rows[0] || {});
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/pardavejas', async (req, res) => {
+  try {
+    const b = req.body;
+    const { rows: existing } = await pool.query('SELECT id FROM pardavejas LIMIT 1');
+    let rows;
+    if (existing.length > 0) {
+      ({ rows } = await pool.query(
+        `UPDATE pardavejas SET company=$1, code=$2, pvm_code=$3, address=$4, phone=$5, email=$6, bank=$7, account=$8 WHERE id=$9 RETURNING *`,
+        [b.company, b.code, b.pvmCode, b.address, b.phone, b.email, b.bank, b.account, existing[0].id]
+      ));
+    } else {
+      ({ rows } = await pool.query(
+        `INSERT INTO pardavejas (company, code, pvm_code, address, phone, email, bank, account) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *`,
+        [b.company, b.code, b.pvmCode, b.address, b.phone, b.email, b.bank, b.account]
+      ));
+    }
+    res.json(rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 const PORT = 3001;
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`API server running on port ${PORT}`);

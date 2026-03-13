@@ -25,7 +25,7 @@ Mobiliesiems pritaikyta React aplikacija elektrikams, skirta registruoti darbo o
 
 ## Duomenų saugojimas
 - **PostgreSQL** — objektai, dienos, medžiagos, kameros, laidai, rezultatai
-- **localStorage** — pardavėjo nustatymai (`elektros_pardavejas`), sąskaitų PDF (`invoices_{objId}`)
+- **localStorage** — sąskaitų PDF (`invoices_{objId}`)
 
 ## DB Lentelės
 - `objektas` — objekto ir kliento informacija
@@ -34,6 +34,7 @@ Mobiliesiems pritaikyta React aplikacija elektrikams, skirta registruoti darbo o
 - `kameros` — kamerų pavadinimų duomenų bazė (autocomplete)
 - `laidai` — laidų pavadinimų duomenų bazė (autocomplete)
 - `rezultatas` — suvestinių skaičiavimo rezultatai
+- `pardavejas` — pardavėjo (jūsų) duomenys sąskaitoms
 
 ## Failų struktūra
 - `index.html` — pagrindinis HTML failas
