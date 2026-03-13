@@ -148,6 +148,35 @@ export default function MaterialForm({ editingMaterial, onSave, onBack }) {
         <button className="btn-back" onClick={onBack}>← Atgal</button>
         <h2>{editingMaterial ? 'Redaguoti medžiagą' : 'Nauja medžiaga'}</h2>
       </div>
+      {(kameros.length > 0 || laidai.length > 0) && (
+        <div className="quick-pick-section">
+          {kameros.length > 0 && (
+            <div className="quick-pick-group">
+              <h4>Kameros</h4>
+              <div className="quick-pick-list">
+                {kameros.map((item) => (
+                  <div key={item.id} className="quick-pick-item" onClick={() => handleQuickSelect(item.kameros)}>
+                    {item.kameros}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          {laidai.length > 0 && (
+            <div className="quick-pick-group">
+              <h4>Laidai</h4>
+              <div className="quick-pick-list">
+                {laidai.map((item) => (
+                  <div key={item.id} className="quick-pick-item" onClick={() => handleQuickSelect(item.laidai)}>
+                    {item.laidai}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
       <form onSubmit={handleSubmit}>
         <div className="form-group" ref={wrapperRef} style={{ position: 'relative' }}>
           <label htmlFor="mat-name">Pavadinimas *</label>
