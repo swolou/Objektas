@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
-import { useLocalStorage } from './hooks/useLocalStorage';
-import { generateId } from './utils';
+import {
+  useApi, apiCreateObject, apiUpdateObject, apiDeleteObject,
+  apiChangeStatus, apiAddDay, apiDeleteDay,
+  apiAddMaterial, apiUpdateMaterial, apiDeleteMaterial,
+  apiSaveRezultatas, apiDeleteRezultatas,
+  saveInvoiceLocal, deleteInvoiceLocal,
+} from './hooks/useApi';
 import ObjectsList from './components/ObjectsList';
 import ObjectForm from './components/ObjectForm';
 import ObjectDetail from './components/ObjectDetail';
@@ -8,7 +13,7 @@ import MaterialForm from './components/MaterialForm';
 import SellerSettings from './components/SellerSettings';
 
 export default function App() {
-  const [objects, saveObjects] = useLocalStorage();
+  const [objects, refreshObjects, loading] = useApi();
   const [view, setView] = useState('list');
   const [currentObjectId, setCurrentObjectId] = useState(null);
   const [currentDayId, setCurrentDayId] = useState(null);
@@ -27,24 +32,16 @@ export default function App() {
     setView('detail');
   };
 
-  const handleSaveObject = (data) => {
+  const handleSaveObject = async (data) => {
     if (editingObject) {
-      const updated = objects.map((o) =>
-        o.id === editingObject.id ? { ...o, ...data } : o
-      );
-      saveObjects(updated);
+      await apiUpdateObject(editingObject.id, { ...data, status: editingObject.status });
+      await refreshObjects();
       setCurrentObjectId(editingObject.id);
       setEditingObject(null);
       setView('detail');
     } else {
-      const newObj = {
-        id: generateId(),
-        ...data,
-        days: [],
-        materials: [],
-        createdAt: Date.now(),
-      };
-      saveObjects([...objects, newObj]);
+      await apiCreateObject(data);
+      await refreshObjects();
       setView('list');
     }
   };
@@ -54,42 +51,26 @@ export default function App() {
     setView('objectForm');
   };
 
-  const handleChangeStatus = (id, newStatus) => {
-    const updated = objects.map((o) =>
-      o.id === id ? { ...o, status: newStatus } : o
-    );
-    saveObjects(updated);
+  const handleChangeStatus = async (id, newStatus) => {
+    await apiChangeStatus(id, newStatus);
+    await refreshObjects();
   };
 
-  const handleDeleteObject = (id) => {
-    saveObjects(objects.filter((o) => o.id !== id));
+  const handleDeleteObject = async (id) => {
+    await apiDeleteObject(id);
+    await refreshObjects();
     setCurrentObjectId(null);
     setView('list');
   };
 
-  const handleAddDay = (objId, dateStr) => {
-    const updated = objects.map((o) => {
-      if (o.id !== objId) return o;
-      const days = o.days || [];
-      const existing = days.find((d) => d.date === dateStr);
-      if (existing) return o;
-      return {
-        ...o,
-        days: [...days, { id: generateId(), date: dateStr, materials: [] }],
-      };
-    });
-    saveObjects(updated);
+  const handleAddDay = async (objId, dateStr) => {
+    await apiAddDay(objId, dateStr);
+    await refreshObjects();
   };
 
-  const handleDeleteDay = (objId, dayId) => {
-    const updated = objects.map((o) => {
-      if (o.id !== objId) return o;
-      return {
-        ...o,
-        days: (o.days || []).filter((d) => d.id !== dayId),
-      };
-    });
-    saveObjects(updated);
+  const handleDeleteDay = async (objId, dayId) => {
+    await apiDeleteDay(dayId);
+    await refreshObjects();
   };
 
   const handleAddMaterial = (dayId) => {
@@ -104,67 +85,41 @@ export default function App() {
     setView('materialForm');
   };
 
-  const handleSaveMaterial = (matData) => {
-    const updated = objects.map((o) => {
-      if (o.id !== currentObjectId) return o;
-      const days = (o.days || []).map((d) => {
-        if (d.id !== currentDayId) return d;
-        if (editingMaterial) {
-          return {
-            ...d,
-            materials: d.materials.map((m) =>
-              m.id === editingMaterial.id ? { ...m, ...matData } : m
-            ),
-          };
-        }
-        return {
-          ...d,
-          materials: [...d.materials, { id: generateId(), ...matData }],
-        };
-      });
-      return { ...o, days };
-    });
-    saveObjects(updated);
+  const handleSaveMaterial = async (matData) => {
+    if (editingMaterial) {
+      await apiUpdateMaterial(editingMaterial.id, matData);
+    } else {
+      await apiAddMaterial(currentDayId, matData);
+    }
+    await refreshObjects();
     setEditingMaterial(null);
     setCurrentDayId(null);
     setView('detail');
   };
 
-  const handleDeleteMaterial = (objId, dayId, matId) => {
-    const updated = objects.map((o) => {
-      if (o.id !== objId) return o;
-      const days = (o.days || []).map((d) => {
-        if (d.id !== dayId) return d;
-        return {
-          ...d,
-          materials: d.materials.filter((m) => m.id !== matId),
-        };
-      });
-      return { ...o, days };
-    });
-    saveObjects(updated);
+  const handleDeleteMaterial = async (objId, dayId, matId) => {
+    await apiDeleteMaterial(matId);
+    await refreshObjects();
   };
 
-  const handleSaveInvoice = (objId, invoiceRecord) => {
-    const updated = objects.map((o) => {
-      if (o.id !== objId) return o;
-      return {
-        ...o,
-        invoices: [...(o.invoices || []), invoiceRecord],
-      };
-    });
-    saveObjects(updated);
+  const handleSaveInvoice = async (objId, invoiceRecord) => {
+    saveInvoiceLocal(objId, invoiceRecord);
+    await refreshObjects();
   };
 
-  const handleDeleteInvoice = (objId, invoiceId) => {
-    const updated = objects.map((o) => {
-      if (o.id !== objId) return o;
-      return {
-        ...o,
-        invoices: (o.invoices || []).filter((inv) => inv.id !== invoiceId),
-      };
-    });
-    saveObjects(updated);
+  const handleDeleteInvoice = async (objId, invoiceId) => {
+    deleteInvoiceLocal(objId, invoiceId);
+    await refreshObjects();
+  };
+
+  const handleSaveRezultatas = async (objId, data) => {
+    await apiSaveRezultatas(objId, data);
+    await refreshObjects();
+  };
+
+  const handleDeleteRezultatas = async (rezId) => {
+    await apiDeleteRezultatas(rezId);
+    await refreshObjects();
   };
 
   const handleBackToList = () => {
@@ -180,6 +135,23 @@ export default function App() {
     setCurrentDayId(null);
     setView('detail');
   };
+
+  if (loading) {
+    return (
+      <>
+        <header>
+          <div className="header-content">
+            <h1>⚡ Objektų valdymas</h1>
+          </div>
+        </header>
+        <div className="view">
+          <div className="empty-state">
+            <p>Kraunama...</p>
+          </div>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
@@ -220,6 +192,8 @@ export default function App() {
           onDeleteMaterial={handleDeleteMaterial}
           onSaveInvoice={handleSaveInvoice}
           onDeleteInvoice={handleDeleteInvoice}
+          onSaveRezultatas={handleSaveRezultatas}
+          onDeleteRezultatas={handleDeleteRezultatas}
         />
       )}
 

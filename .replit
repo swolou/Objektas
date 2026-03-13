@@ -1,7 +1,7 @@
 run = "vite"
 entrypoint = "index.html"
 hidden = [".config"]
-modules = ["nodejs-18", "web"]
+modules = ["nodejs-18", "web", "postgresql-16"]
 
 [nix]
 channel = "stable-23_05"
@@ -12,12 +12,20 @@ build = ["npm", "run", "build"]
 publicDir = "dist"
 
 [[ports]]
+localPort = 3001
+externalPort = 3002
+
+[[ports]]
 localPort = 5000
 externalPort = 80
 
 [[ports]]
 localPort = 5001
 externalPort = 3000
+
+[[ports]]
+localPort = 5904
+externalPort = 3001
 
 [agent]
 expertMode = true
@@ -38,10 +46,10 @@ args = "Start application"
 name = "Start application"
 author = "agent"
 
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "npx vite"
-waitForPort = 5000
-
 [workflows.workflow.metadata]
 outputType = "webview"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node server.js & npx vite"
+waitForPort = 5000

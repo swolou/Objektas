@@ -7,7 +7,8 @@ export default function ObjectDetail({
   object, onBack, onEdit, onDelete,
   onAddDay, onDeleteDay,
   onAddMaterial, onEditMaterial, onDeleteMaterial,
-  onSaveInvoice, onDeleteInvoice
+  onSaveInvoice, onDeleteInvoice,
+  onSaveRezultatas, onDeleteRezultatas
 }) {
   const [confirmTarget, setConfirmTarget] = useState(null);
   const [showInvoicePrompt, setShowInvoicePrompt] = useState(false);
@@ -49,6 +50,8 @@ export default function ObjectDetail({
       onDeleteInvoice(object.id, confirmTarget.invoiceId);
     } else if (confirmTarget.type === 'day') {
       onDeleteDay(object.id, confirmTarget.dayId);
+    } else if (confirmTarget.type === 'rezultatas') {
+      if (onDeleteRezultatas) onDeleteRezultatas(confirmTarget.rezId);
     }
     setConfirmTarget(null);
   };
@@ -87,6 +90,7 @@ export default function ObjectDetail({
     if (confirmTarget.type === 'object') return 'Ar tikrai norite ištrinti šį objektą?';
     if (confirmTarget.type === 'day') return 'Pašalinti šią dieną su visomis medžiagomis?';
     if (confirmTarget.type === 'invoice') return 'Pašalinti šią sąskaitą?';
+    if (confirmTarget.type === 'rezultatas') return 'Pašalinti šį rezultatą?';
     return 'Pašalinti šią medžiagą?';
   };
 
@@ -252,7 +256,17 @@ export default function ObjectDetail({
 
       {hasAnyMaterials && (
         <>
-          <button className="btn-summary" onClick={() => generateMaterialsSummaryPdf(object, aggregatedMaterials())}>
+          <button className="btn-summary" onClick={() => {
+            const agg = aggregatedMaterials();
+            const totalQty = agg.reduce((s, m) => s + m.quantity, 0);
+            generateMaterialsSummaryPdf(object, agg);
+            if (onSaveRezultatas) {
+              onSaveRezultatas(object.id, {
+                data: new Date().toISOString().split('T')[0],
+                suma: totalQty,
+              });
+            }
+          }}>
             📋 Formuoti bendrą medžiagų kiekį
           </button>
           <button className="btn-invoice" onClick={handleExportInvoice}>
@@ -297,6 +311,26 @@ export default function ObjectDetail({
                 <button
                   className="material-delete"
                   onClick={() => setConfirmTarget({ type: 'invoice', invoiceId: inv.id })}
+                  title="Pašalinti"
+                >✕</button>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {(object.rezultatai || []).length > 0 && (
+        <>
+          <div className="section-header" style={{ marginTop: 20 }}>
+            <h3>Rezultatai</h3>
+          </div>
+          <div className="list">
+            {object.rezultatai.map((rez) => (
+              <div className="db-item" key={rez.id} style={{ marginBottom: 4 }}>
+                <span>📊 {rez.data ? rez.data.split('T')[0] : ''} — {parseFloat(rez.suma)} m</span>
+                <button
+                  className="material-delete"
+                  onClick={() => setConfirmTarget({ type: 'rezultatas', rezId: rez.id })}
                   title="Pašalinti"
                 >✕</button>
               </div>
