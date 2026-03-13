@@ -543,6 +543,19 @@ header h1 {
   font-size: 13px;
 }
 
+.db-item-name {
+  cursor: pointer;
+  flex: 1;
+  padding: 4px 0;
+  color: var(--primary);
+  transition: color 0.15s;
+}
+
+.db-item-name:hover {
+  color: var(--primary-dark);
+  text-decoration: underline;
+}
+
 .db-empty {
   font-size: 13px;
   color: var(--text-secondary);

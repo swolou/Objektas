@@ -17,6 +17,7 @@ export default function MaterialForm({ editingMaterial, onSave, onBack }) {
   const [newKamera, setNewKamera] = useState('');
   const [newLaidas, setNewLaidas] = useState('');
   const wrapperRef = useRef(null);
+  const quantityRef = useRef(null);
 
   useEffect(() => {
     if (editingMaterial) {
@@ -80,6 +81,14 @@ export default function MaterialForm({ editingMaterial, onSave, onBack }) {
     setForm({ ...form, name });
     setShowSuggestions(false);
     setSuggestions([]);
+    setTimeout(() => quantityRef.current?.focus(), 50);
+  };
+
+  const handleQuickSelect = (name) => {
+    setForm({ ...form, name });
+    setShowSuggestions(false);
+    setSuggestions([]);
+    setTimeout(() => quantityRef.current?.focus(), 50);
   };
 
   const handleKeyDown = (e) => {
@@ -174,7 +183,7 @@ export default function MaterialForm({ editingMaterial, onSave, onBack }) {
         <div className="form-group">
           <label htmlFor="mat-quantity">Kiekis (m) *</label>
           <input id="mat-quantity" name="quantity" type="number" step="0.01" min="0"
-            value={form.quantity} onChange={handleChange} placeholder="0" required />
+            ref={quantityRef} value={form.quantity} onChange={handleChange} placeholder="0" required />
         </div>
         <button type="submit" className="btn-primary btn-full">Išsaugoti medžiagą</button>
       </form>
@@ -199,7 +208,7 @@ export default function MaterialForm({ editingMaterial, onSave, onBack }) {
           <div className="db-list">
             {kameros.map((item) => (
               <div className="db-item" key={item.id}>
-                <span>{item.kameros}</span>
+                <span className="db-item-name" onClick={() => handleQuickSelect(item.kameros)}>{item.kameros}</span>
                 <button className="material-delete" onClick={() => handleDeleteKamera(item.id)} title="Pašalinti">✕</button>
               </div>
             ))}
@@ -227,7 +236,7 @@ export default function MaterialForm({ editingMaterial, onSave, onBack }) {
           <div className="db-list">
             {laidai.map((item) => (
               <div className="db-item" key={item.id}>
-                <span>{item.laidai}</span>
+                <span className="db-item-name" onClick={() => handleQuickSelect(item.laidai)}>{item.laidai}</span>
                 <button className="material-delete" onClick={() => handleDeleteLaidas(item.id)} title="Pašalinti">✕</button>
               </div>
             ))}
