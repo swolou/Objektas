@@ -8,6 +8,7 @@ export default function MaterialForm({ editingMaterial, onSave, onBack }) {
   const [form, setForm] = useState({
     name: '',
     quantity: '',
+    unit: 'm',
   });
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -24,9 +25,10 @@ export default function MaterialForm({ editingMaterial, onSave, onBack }) {
       setForm({
         name: editingMaterial.name || '',
         quantity: editingMaterial.quantity !== undefined ? String(editingMaterial.quantity) : '',
+        unit: editingMaterial.unit || 'm',
       });
     } else {
-      setForm({ name: '', quantity: '' });
+      setForm({ name: '', quantity: '', unit: 'm' });
     }
   }, [editingMaterial]);
 
@@ -84,8 +86,8 @@ export default function MaterialForm({ editingMaterial, onSave, onBack }) {
     setTimeout(() => quantityRef.current?.focus(), 50);
   };
 
-  const handleQuickSelect = (name) => {
-    setForm({ ...form, name });
+  const handleQuickSelect = (name, unit) => {
+    setForm({ ...form, name, unit });
     setShowSuggestions(false);
     setSuggestions([]);
     setTimeout(() => quantityRef.current?.focus(), 50);
@@ -115,6 +117,7 @@ export default function MaterialForm({ editingMaterial, onSave, onBack }) {
     onSave({
       name: form.name.trim(),
       quantity: parseFloat(form.quantity) || 0,
+      unit: form.unit,
     });
   };
 
@@ -181,7 +184,7 @@ export default function MaterialForm({ editingMaterial, onSave, onBack }) {
           )}
         </div>
         <div className="form-group">
-          <label htmlFor="mat-quantity">Kiekis (m) *</label>
+          <label htmlFor="mat-quantity">Kiekis ({form.unit === 'Vnt.' ? 'Vnt.' : 'm'}) *</label>
           <input id="mat-quantity" name="quantity" type="number" step="0.01" min="0"
             ref={quantityRef} value={form.quantity} onChange={handleChange} placeholder="0" required />
         </div>
@@ -208,7 +211,7 @@ export default function MaterialForm({ editingMaterial, onSave, onBack }) {
           <div className="db-list">
             {kameros.map((item) => (
               <div className="db-item" key={item.id}>
-                <span className="db-item-name" onClick={() => handleQuickSelect(item.kameros)}>{item.kameros}</span>
+                <span className="db-item-name" onClick={() => handleQuickSelect(item.kameros, 'Vnt.')}>{item.kameros}</span>
                 <button className="material-delete" onClick={() => handleDeleteKamera(item.id)} title="Pašalinti">✕</button>
               </div>
             ))}
@@ -236,7 +239,7 @@ export default function MaterialForm({ editingMaterial, onSave, onBack }) {
           <div className="db-list">
             {laidai.map((item) => (
               <div className="db-item" key={item.id}>
-                <span className="db-item-name" onClick={() => handleQuickSelect(item.laidai)}>{item.laidai}</span>
+                <span className="db-item-name" onClick={() => handleQuickSelect(item.laidai, 'm')}>{item.laidai}</span>
                 <button className="material-delete" onClick={() => handleDeleteLaidas(item.id)} title="Pašalinti">✕</button>
               </div>
             ))}

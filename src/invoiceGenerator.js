@@ -271,7 +271,7 @@ export function generateMaterialsSummaryPdf(object, aggregatedMaterials) {
       doc.text(line, colName, y + li * 5);
     });
 
-    doc.text(`${m.quantity} m`, colQty, y, { align: 'right' });
+    doc.text(`${m.quantity} ${m.unit || 'm'}`, colQty, y, { align: 'right' });
     y += Math.max(nameLines.length * 5, 6) + 2;
   });
 

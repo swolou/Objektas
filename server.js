@@ -135,8 +135,8 @@ app.delete('/api/dienos/:id', async (req, res) => {
 app.post('/api/dienos/:id/medziagos', async (req, res) => {
   try {
     const { rows } = await pool.query(
-      'INSERT INTO medziagos (diena_id, name, quantity) VALUES ($1, $2, $3) RETURNING *',
-      [req.params.id, req.body.name, req.body.quantity || 0]
+      'INSERT INTO medziagos (diena_id, name, quantity, unit) VALUES ($1, $2, $3, $4) RETURNING *',
+      [req.params.id, req.body.name, req.body.quantity || 0, req.body.unit || 'm']
     );
     const { rows: dayRows } = await pool.query('SELECT objektas_id FROM dienos WHERE id=$1', [req.params.id]);
     if (dayRows.length > 0) {
@@ -152,8 +152,8 @@ app.post('/api/dienos/:id/medziagos', async (req, res) => {
 app.put('/api/medziagos/:id', async (req, res) => {
   try {
     const { rows } = await pool.query(
-      'UPDATE medziagos SET name=$1, quantity=$2 WHERE id=$3 RETURNING *',
-      [req.body.name, req.body.quantity || 0, req.params.id]
+      'UPDATE medziagos SET name=$1, quantity=$2, unit=$3 WHERE id=$4 RETURNING *',
+      [req.body.name, req.body.quantity || 0, req.body.unit || 'm', req.params.id]
     );
     res.json(rows[0]);
   } catch (err) {

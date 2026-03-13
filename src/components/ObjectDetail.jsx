@@ -27,7 +27,7 @@ export default function ObjectDetail({
       if (map[key]) {
         map[key].quantity += m.quantity || 0;
       } else {
-        map[key] = { name: m.name.trim(), quantity: m.quantity || 0 };
+        map[key] = { name: m.name.trim(), quantity: m.quantity || 0, unit: m.unit || 'm' };
       }
     });
     return Object.values(map).sort((a, b) => a.name.localeCompare(b.name));
@@ -236,7 +236,7 @@ export default function ObjectDetail({
                         <div className="material-card-compact" key={m.id}>
                           <div className="material-info" onClick={() => onEditMaterial(day.id, m)} style={{ cursor: 'pointer' }}>
                             <span className="material-name">{m.name}</span>
-                            <span className="material-qty">{m.quantity} m</span>
+                            <span className="material-qty">{m.quantity} {m.unit || 'm'}</span>
                           </div>
                           <button
                             className="material-delete"
