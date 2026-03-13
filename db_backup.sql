@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict u4IWmr4nEbI9shLRNKN5JHPgi5ZfkmCoi0ygsCvfBZLrXVjsmlofR0Y12kEm2aq
+\restrict VjCuO76bgDYvQ2qQbTpjdSY8ss3IhNwqDMg2uiHAFMqijIGLqXIFm0MtxodXGoO
 
 -- Dumped from database version 16.10
 -- Dumped by pg_dump version 16.10
@@ -133,7 +133,8 @@ CREATE TABLE public.medziagos (
     id integer NOT NULL,
     diena_id integer,
     name character varying(255) NOT NULL,
-    quantity numeric(10,2) DEFAULT 0
+    quantity numeric(10,2) DEFAULT 0,
+    unit character varying(10) DEFAULT 'm'::character varying
 );
 
 
@@ -204,6 +205,47 @@ ALTER SEQUENCE public.objektas_id_seq OWNER TO postgres;
 --
 
 ALTER SEQUENCE public.objektas_id_seq OWNED BY public.objektas.id;
+
+
+--
+-- Name: pardavejas; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.pardavejas (
+    id integer NOT NULL,
+    company character varying(255),
+    code character varying(50),
+    pvm_code character varying(50),
+    address character varying(255),
+    phone character varying(50),
+    email character varying(255),
+    bank character varying(255),
+    account character varying(50)
+);
+
+
+ALTER TABLE public.pardavejas OWNER TO postgres;
+
+--
+-- Name: pardavejas_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.pardavejas_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.pardavejas_id_seq OWNER TO postgres;
+
+--
+-- Name: pardavejas_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.pardavejas_id_seq OWNED BY public.pardavejas.id;
 
 
 --
@@ -278,6 +320,13 @@ ALTER TABLE ONLY public.objektas ALTER COLUMN id SET DEFAULT nextval('public.obj
 
 
 --
+-- Name: pardavejas id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.pardavejas ALTER COLUMN id SET DEFAULT nextval('public.pardavejas_id_seq'::regclass);
+
+
+--
 -- Name: rezultatas id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -289,8 +338,8 @@ ALTER TABLE ONLY public.rezultatas ALTER COLUMN id SET DEFAULT nextval('public.r
 --
 
 COPY public.dienos (id, objektas_id, date) FROM stdin;
-7	6	2026-03-13
-8	7	2026-03-11
+20	17	2026-03-13
+21	17	2026-03-04
 \.
 
 
@@ -299,8 +348,10 @@ COPY public.dienos (id, objektas_id, date) FROM stdin;
 --
 
 COPY public.kameros (id, kameros) FROM stdin;
-1	sony
-2	daka
+3	Sony
+4	Alhua
+5	Imou
+6	Siemens
 \.
 
 
@@ -309,8 +360,9 @@ COPY public.kameros (id, kameros) FROM stdin;
 --
 
 COPY public.laidai (id, laidai) FROM stdin;
-1	rj45
-2	utp
+3	UTP E5
+5	Kabelis 3 1,5
+6	Kabelis 3 2,5
 \.
 
 
@@ -318,8 +370,16 @@ COPY public.laidai (id, laidai) FROM stdin;
 -- Data for Name: medziagos; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.medziagos (id, diena_id, name, quantity) FROM stdin;
-10	7	daka	63.00
+COPY public.medziagos (id, diena_id, name, quantity, unit) FROM stdin;
+31	20	Kabelis 3 2,5	15.00	m
+32	20	Kabelis 3 1,5	15.00	m
+34	20	Kabelis 3 1,5	12.00	m
+33	20	Kabelis 3 1,5	1545.00	m
+35	20	Siemens	2.00	m
+36	20	Alhua	1.00	Vnt.
+37	20	Kabelis 3 2,5	10.00	m
+38	21	Kabelis 3 1,5	20.00	m
+39	21	Alhua	4.00	Vnt.
 \.
 
 
@@ -328,8 +388,16 @@ COPY public.medziagos (id, diena_id, name, quantity) FROM stdin;
 --
 
 COPY public.objektas (id, name, address, status, notes, client, client_company, client_code, client_pvm, client_address, client_email, phone, created_at) FROM stdin;
-6	Trghh		naujas									2026-03-13 10:14:30.900953
-7	Elga	Dariaus ir gireno	naujas	Skubei								2026-03-13 10:16:17.058938
+17	Namas 1	Nera 2	vykdomas									2026-03-13 11:33:56.450026
+\.
+
+
+--
+-- Data for Name: pardavejas; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.pardavejas (id, company, code, pvm_code, address, phone, email, bank, account) FROM stdin;
+1								
 \.
 
 
@@ -345,42 +413,49 @@ COPY public.rezultatas (id, objektas_id, data, suma) FROM stdin;
 -- Name: dienos_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.dienos_id_seq', 8, true);
+SELECT pg_catalog.setval('public.dienos_id_seq', 21, true);
 
 
 --
 -- Name: kameros_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.kameros_id_seq', 2, true);
+SELECT pg_catalog.setval('public.kameros_id_seq', 6, true);
 
 
 --
 -- Name: laidai_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.laidai_id_seq', 2, true);
+SELECT pg_catalog.setval('public.laidai_id_seq', 6, true);
 
 
 --
 -- Name: medziagos_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.medziagos_id_seq', 10, true);
+SELECT pg_catalog.setval('public.medziagos_id_seq', 39, true);
 
 
 --
 -- Name: objektas_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.objektas_id_seq', 7, true);
+SELECT pg_catalog.setval('public.objektas_id_seq', 17, true);
+
+
+--
+-- Name: pardavejas_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.pardavejas_id_seq', 1, true);
 
 
 --
 -- Name: rezultatas_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.rezultatas_id_seq', 2, true);
+SELECT pg_catalog.setval('public.rezultatas_id_seq', 7, true);
 
 
 --
@@ -440,6 +515,14 @@ ALTER TABLE ONLY public.objektas
 
 
 --
+-- Name: pardavejas pardavejas_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.pardavejas
+    ADD CONSTRAINT pardavejas_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: rezultatas rezultatas_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -475,5 +558,5 @@ ALTER TABLE ONLY public.rezultatas
 -- PostgreSQL database dump complete
 --
 
-\unrestrict u4IWmr4nEbI9shLRNKN5JHPgi5ZfkmCoi0ygsCvfBZLrXVjsmlofR0Y12kEm2aq
+\unrestrict VjCuO76bgDYvQ2qQbTpjdSY8ss3IhNwqDMg2uiHAFMqijIGLqXIFm0MtxodXGoO
 

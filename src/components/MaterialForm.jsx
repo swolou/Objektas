@@ -184,7 +184,14 @@ export default function MaterialForm({ editingMaterial, onSave, onBack }) {
           )}
         </div>
         <div className="form-group">
-          <label htmlFor="mat-quantity">Kiekis ({form.unit === 'Vnt.' ? 'Vnt.' : 'm'}) *</label>
+          <label htmlFor="mat-unit">Vienetas</label>
+          <select id="mat-unit" name="unit" value={form.unit} onChange={handleChange}>
+            <option value="m">m (metrai)</option>
+            <option value="Vnt.">Vnt. (vienetai)</option>
+          </select>
+        </div>
+        <div className="form-group">
+          <label htmlFor="mat-quantity">Kiekis ({form.unit}) *</label>
           <input id="mat-quantity" name="quantity" type="number" step="0.01" min="0"
             ref={quantityRef} value={form.quantity} onChange={handleChange} placeholder="0" required />
         </div>

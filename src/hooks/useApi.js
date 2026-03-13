@@ -46,7 +46,7 @@ function mapObjectFromDb(obj) {
         id: m.id,
         name: m.name || '',
         quantity: parseFloat(m.quantity) || 0,
-        unit: 'm',
+        unit: m.unit || 'm',
         price: 0,
       })),
     })),
