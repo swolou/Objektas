@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "z8ORcKb3KoFKO0oN8Y3fd"
+uri = "file://public/qrcode.png"
+type = "image"
+title = "QR kodas - Objektų valdymas"
