@@ -3,6 +3,7 @@ import {
   apiGetKameros, apiAddKamera, apiUpdateKamera, apiDeleteKamera,
   apiGetLaidai, apiAddLaidas, apiUpdateLaidas, apiDeleteLaidas,
 } from '../hooks/useApi';
+import ConfirmModal from './ConfirmModal';
 
 export default function MaterialForm({ editingMaterial, onSave, onBack }) {
   const [form, setForm] = useState({
@@ -19,6 +20,7 @@ export default function MaterialForm({ editingMaterial, onSave, onBack }) {
   const [newLaidas, setNewLaidas] = useState('');
   const [editingDbItem, setEditingDbItem] = useState(null);
   const [editingDbValue, setEditingDbValue] = useState('');
+  const [confirmTarget, setConfirmTarget] = useState(null);
   const wrapperRef = useRef(null);
   const quantityRef = useRef(null);
 
@@ -140,9 +142,8 @@ export default function MaterialForm({ editingMaterial, onSave, onBack }) {
     await loadDbData();
   };
 
-  const handleDeleteKamera = async (id) => {
-    await apiDeleteKamera(id);
-    await loadDbData();
+  const handleDeleteKamera = (id) => {
+    setConfirmTarget({ type: 'kamera', id });
   };
 
   const handleAddLaidas = async () => {
@@ -152,8 +153,18 @@ export default function MaterialForm({ editingMaterial, onSave, onBack }) {
     await loadDbData();
   };
 
-  const handleDeleteLaidas = async (id) => {
-    await apiDeleteLaidas(id);
+  const handleDeleteLaidas = (id) => {
+    setConfirmTarget({ type: 'laidas', id });
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!confirmTarget) return;
+    if (confirmTarget.type === 'kamera') {
+      await apiDeleteKamera(confirmTarget.id);
+    } else if (confirmTarget.type === 'laidas') {
+      await apiDeleteLaidas(confirmTarget.id);
+    }
+    setConfirmTarget(null);
     await loadDbData();
   };
 
@@ -319,6 +330,15 @@ export default function MaterialForm({ editingMaterial, onSave, onBack }) {
           </div>
         )}
       </div>
+
+      {confirmTarget && (
+        <ConfirmModal
+          message={confirmTarget.type === 'kamera' ? 'Pašalinti šią kamerą iš duomenų bazės?' : 'Pašalinti šį laidą iš duomenų bazės?'}
+          onConfirm={handleConfirmDelete}
+          onCancel={() => setConfirmTarget(null)}
+          requireCode={true}
+        />
+      )}
     </div>
   );
 }
