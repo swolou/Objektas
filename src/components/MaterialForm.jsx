@@ -180,6 +180,7 @@ export default function MaterialForm({ editingMaterial, onSave, onBack }) {
       saveEditDbItem();
     } else if (e.key === 'Escape') {
       setEditingDbItem(null);
+      setEditingDbValue('');
     }
   };
 
