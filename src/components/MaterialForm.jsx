@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  apiGetKameros, apiAddKamera, apiDeleteKamera,
-  apiGetLaidai, apiAddLaidas, apiDeleteLaidas,
+  apiGetKameros, apiAddKamera, apiUpdateKamera, apiDeleteKamera,
+  apiGetLaidai, apiAddLaidas, apiUpdateLaidas, apiDeleteLaidas,
 } from '../hooks/useApi';
 
 export default function MaterialForm({ editingMaterial, onSave, onBack }) {
@@ -17,6 +17,8 @@ export default function MaterialForm({ editingMaterial, onSave, onBack }) {
   const [laidai, setLaidai] = useState([]);
   const [newKamera, setNewKamera] = useState('');
   const [newLaidas, setNewLaidas] = useState('');
+  const [editingDbItem, setEditingDbItem] = useState(null);
+  const [editingDbValue, setEditingDbValue] = useState('');
   const wrapperRef = useRef(null);
   const quantityRef = useRef(null);
 
@@ -152,6 +154,35 @@ export default function MaterialForm({ editingMaterial, onSave, onBack }) {
     await loadDbData();
   };
 
+  const startEditDbItem = (type, id, currentName) => {
+    setEditingDbItem({ type, id });
+    setEditingDbValue(currentName);
+  };
+
+  const saveEditDbItem = async () => {
+    if (!editingDbItem || !editingDbValue.trim()) {
+      setEditingDbItem(null);
+      return;
+    }
+    if (editingDbItem.type === 'kameros') {
+      await apiUpdateKamera(editingDbItem.id, editingDbValue.trim());
+    } else {
+      await apiUpdateLaidas(editingDbItem.id, editingDbValue.trim());
+    }
+    setEditingDbItem(null);
+    setEditingDbValue('');
+    await loadDbData();
+  };
+
+  const handleEditKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      saveEditDbItem();
+    } else if (e.key === 'Escape') {
+      setEditingDbItem(null);
+    }
+  };
+
   return (
     <div className="view">
       <div className="toolbar">
@@ -225,7 +256,18 @@ export default function MaterialForm({ editingMaterial, onSave, onBack }) {
           <div className="db-list">
             {kameros.map((item) => (
               <div className="db-item" key={item.id}>
-                <span className="db-item-name" onClick={() => handleQuickSelect(item.kameros, 'Vnt.')}>{item.kameros}</span>
+                {editingDbItem?.type === 'kameros' && editingDbItem?.id === item.id ? (
+                  <input
+                    className="db-edit-input"
+                    value={editingDbValue}
+                    onChange={(e) => setEditingDbValue(e.target.value)}
+                    onKeyDown={handleEditKeyDown}
+                    onBlur={saveEditDbItem}
+                    autoFocus
+                  />
+                ) : (
+                  <span className="db-item-name" onClick={() => handleQuickSelect(item.kameros, 'Vnt.')} onDoubleClick={() => startEditDbItem('kameros', item.id, item.kameros)}>{item.kameros}</span>
+                )}
                 <button className="material-delete" onClick={() => handleDeleteKamera(item.id)} title="Pašalinti">✕</button>
               </div>
             ))}
@@ -253,7 +295,18 @@ export default function MaterialForm({ editingMaterial, onSave, onBack }) {
           <div className="db-list">
             {laidai.map((item) => (
               <div className="db-item" key={item.id}>
-                <span className="db-item-name" onClick={() => handleQuickSelect(item.laidai, 'm')}>{item.laidai}</span>
+                {editingDbItem?.type === 'laidai' && editingDbItem?.id === item.id ? (
+                  <input
+                    className="db-edit-input"
+                    value={editingDbValue}
+                    onChange={(e) => setEditingDbValue(e.target.value)}
+                    onKeyDown={handleEditKeyDown}
+                    onBlur={saveEditDbItem}
+                    autoFocus
+                  />
+                ) : (
+                  <span className="db-item-name" onClick={() => handleQuickSelect(item.laidai, 'm')} onDoubleClick={() => startEditDbItem('laidai', item.id, item.laidai)}>{item.laidai}</span>
+                )}
                 <button className="material-delete" onClick={() => handleDeleteLaidas(item.id)} title="Pašalinti">✕</button>
               </div>
             ))}

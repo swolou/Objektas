@@ -556,6 +556,15 @@ header h1 {
   text-decoration: underline;
 }
 
+.db-edit-input {
+  flex: 1;
+  padding: 4px 8px;
+  border: 2px solid var(--primary);
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+}
+
 .quick-pick-section {
   margin-bottom: 16px;
   display: flex;

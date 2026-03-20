@@ -149,6 +149,15 @@ export async function apiAddKamera(name) {
   return res.json();
 }
 
+export async function apiUpdateKamera(id, name) {
+  const res = await fetch(`/api/kameros/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name }),
+  });
+  return res.json();
+}
+
 export async function apiDeleteKamera(id) {
   await fetch(`/api/kameros/${id}`, { method: 'DELETE' });
 }
@@ -161,6 +170,15 @@ export async function apiGetLaidai() {
 export async function apiAddLaidas(name) {
   const res = await fetch('/api/laidai', {
     method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name }),
+  });
+  return res.json();
+}
+
+export async function apiUpdateLaidas(id, name) {
+  const res = await fetch(`/api/laidai/${id}`, {
+    method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ name }),
   });

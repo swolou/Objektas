@@ -270,6 +270,19 @@ app.post('/api/kameros', async (req, res) => {
   }
 });
 
+app.put('/api/kameros/:id', async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      'UPDATE kameros SET kameros=$1 WHERE id=$2 RETURNING *',
+      [req.body.name, req.params.id]
+    );
+    res.json(rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.delete('/api/kameros/:id', async (req, res) => {
   try {
     await pool.query('DELETE FROM kameros WHERE id=$1', [req.params.id]);
@@ -299,6 +312,19 @@ app.post('/api/laidai', async (req, res) => {
       [req.body.name]
     );
     res.json(rows[0] || { laidai: req.body.name });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.put('/api/laidai/:id', async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      'UPDATE laidai SET laidai=$1 WHERE id=$2 RETURNING *',
+      [req.body.name, req.params.id]
+    );
+    res.json(rows[0]);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message });
