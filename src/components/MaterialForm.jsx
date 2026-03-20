@@ -266,8 +266,9 @@ export default function MaterialForm({ editingMaterial, onSave, onBack }) {
                     autoFocus
                   />
                 ) : (
-                  <span className="db-item-name" onClick={() => handleQuickSelect(item.kameros, 'Vnt.')} onDoubleClick={() => startEditDbItem('kameros', item.id, item.kameros)}>{item.kameros}</span>
+                  <span className="db-item-name" onClick={() => handleQuickSelect(item.kameros, 'Vnt.')}>{item.kameros}</span>
                 )}
+                <button className="db-edit-btn" onClick={() => startEditDbItem('kameros', item.id, item.kameros)} title="Redaguoti">✏️</button>
                 <button className="material-delete" onClick={() => handleDeleteKamera(item.id)} title="Pašalinti">✕</button>
               </div>
             ))}
@@ -305,8 +306,9 @@ export default function MaterialForm({ editingMaterial, onSave, onBack }) {
                     autoFocus
                   />
                 ) : (
-                  <span className="db-item-name" onClick={() => handleQuickSelect(item.laidai, 'm')} onDoubleClick={() => startEditDbItem('laidai', item.id, item.laidai)}>{item.laidai}</span>
+                  <span className="db-item-name" onClick={() => handleQuickSelect(item.laidai, 'm')}>{item.laidai}</span>
                 )}
+                <button className="db-edit-btn" onClick={() => startEditDbItem('laidai', item.id, item.laidai)} title="Redaguoti">✏️</button>
                 <button className="material-delete" onClick={() => handleDeleteLaidas(item.id)} title="Pašalinti">✕</button>
               </div>
             ))}
