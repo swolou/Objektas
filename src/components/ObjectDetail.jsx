@@ -326,7 +326,7 @@ export default function ObjectDetail({
           message={getConfirmMessage()}
           onConfirm={handleConfirm}
           onCancel={() => setConfirmTarget(null)}
-          requireCode={confirmTarget.type === 'object'}
+          requireCode={confirmTarget.type === 'object' || confirmTarget.type === 'material'}
         />
       )}
     </div>
