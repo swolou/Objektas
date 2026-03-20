@@ -236,14 +236,7 @@ export default function ObjectDetail({
         <>
           <button className="btn-summary" onClick={() => {
             const agg = aggregatedMaterials();
-            const totalQty = agg.reduce((s, m) => s + m.quantity, 0);
             generateMaterialsSummaryPdf(object, agg);
-            if (onSaveRezultatas) {
-              onSaveRezultatas(object.id, {
-                data: new Date().toISOString().split('T')[0],
-                suma: totalQty,
-              });
-            }
           }}>
             📋 Formuoti bendrą medžiagų kiekį
           </button>
