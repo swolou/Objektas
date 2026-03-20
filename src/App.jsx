@@ -4,7 +4,6 @@ import {
   apiChangeStatus, apiAddDay, apiDeleteDay,
   apiAddMaterial, apiUpdateMaterial, apiDeleteMaterial,
   apiSaveRezultatas, apiDeleteRezultatas,
-  saveInvoiceLocal, deleteInvoiceLocal,
 } from './hooks/useApi';
 import ObjectsList from './components/ObjectsList';
 import ObjectForm from './components/ObjectForm';
@@ -102,16 +101,6 @@ export default function App() {
     await refreshObjects();
   };
 
-  const handleSaveInvoice = async (objId, invoiceRecord) => {
-    saveInvoiceLocal(objId, invoiceRecord);
-    await refreshObjects();
-  };
-
-  const handleDeleteInvoice = async (objId, invoiceId) => {
-    deleteInvoiceLocal(objId, invoiceId);
-    await refreshObjects();
-  };
-
   const handleSaveRezultatas = async (objId, data) => {
     await apiSaveRezultatas(objId, data);
     await refreshObjects();
@@ -193,8 +182,6 @@ export default function App() {
           onAddMaterial={handleAddMaterial}
           onEditMaterial={handleEditMaterial}
           onDeleteMaterial={handleDeleteMaterial}
-          onSaveInvoice={handleSaveInvoice}
-          onDeleteInvoice={handleDeleteInvoice}
           onSaveRezultatas={handleSaveRezultatas}
           onDeleteRezultatas={handleDeleteRezultatas}
         />

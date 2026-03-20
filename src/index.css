@@ -78,25 +78,6 @@ header h1 {
   margin-bottom: 16px;
 }
 
-.btn-invoice {
-  display: block;
-  width: 100%;
-  margin-top: 16px;
-  padding: 14px;
-  background: #059669;
-  color: white;
-  border: none;
-  border-radius: var(--radius);
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: inherit;
-  transition: background 0.2s;
-}
-
-.btn-invoice:active {
-  background: #9a3412;
-}
 
 .view {
   padding: 16px 20px;
@@ -753,54 +734,6 @@ header h1 {
   background: var(--card);
   border-radius: var(--radius);
   border: 1px solid var(--border);
-}
-
-.invoice-card {
-  background: var(--card);
-  border-radius: var(--radius);
-  padding: 12px 16px;
-  box-shadow: var(--shadow);
-  border: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.invoice-icon {
-  font-size: 28px;
-  cursor: pointer;
-  flex-shrink: 0;
-}
-
-.invoice-info {
-  flex: 1;
-  cursor: pointer;
-}
-
-.invoice-number {
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.invoice-date {
-  font-size: 12px;
-  color: var(--text-secondary);
-  margin-top: 2px;
-}
-
-.btn-send-email {
-  background: none;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 6px 10px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background 0.2s;
-  flex-shrink: 0;
-}
-
-.btn-send-email:active {
-  background: var(--border);
 }
 
 .modal-overlay {

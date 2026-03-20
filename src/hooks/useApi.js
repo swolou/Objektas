@@ -51,7 +51,6 @@ function mapObjectFromDb(obj) {
       })),
     })),
     rezultatai: obj.rezultatai || [],
-    invoices: JSON.parse(localStorage.getItem(`invoices_${obj.id}`) || '[]'),
   };
 }
 
@@ -75,7 +74,6 @@ export async function apiUpdateObject(id, data) {
 
 export async function apiDeleteObject(id) {
   await fetch(`/api/objektai/${id}`, { method: 'DELETE' });
-  localStorage.removeItem(`invoices_${id}`);
 }
 
 export async function apiChangeStatus(id, status) {
@@ -187,16 +185,4 @@ export async function apiUpdateLaidas(id, name) {
 
 export async function apiDeleteLaidas(id) {
   await fetch(`/api/laidai/${id}`, { method: 'DELETE' });
-}
-
-export function saveInvoiceLocal(objId, invoiceRecord) {
-  const invoices = JSON.parse(localStorage.getItem(`invoices_${objId}`) || '[]');
-  invoices.push(invoiceRecord);
-  localStorage.setItem(`invoices_${objId}`, JSON.stringify(invoices));
-}
-
-export function deleteInvoiceLocal(objId, invoiceId) {
-  let invoices = JSON.parse(localStorage.getItem(`invoices_${objId}`) || '[]');
-  invoices = invoices.filter((inv) => inv.id !== invoiceId);
-  localStorage.setItem(`invoices_${objId}`, JSON.stringify(invoices));
 }

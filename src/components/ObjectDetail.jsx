@@ -1,18 +1,15 @@
 import React, { useState } from 'react';
-import { formatDate, formatCurrency, statusLabels } from '../utils';
-import { generateInvoice, loadSellerInfo, openInvoicePdf, generateMaterialsSummaryPdf } from '../invoiceGenerator';
+import { formatDate, statusLabels } from '../utils';
+import { generateMaterialsSummaryPdf } from '../invoiceGenerator';
 import ConfirmModal from './ConfirmModal';
 
 export default function ObjectDetail({
   object, onBack, onEdit, onDelete,
   onAddDay, onDeleteDay,
   onAddMaterial, onEditMaterial, onDeleteMaterial,
-  onSaveInvoice, onDeleteInvoice,
   onSaveRezultatas, onDeleteRezultatas
 }) {
   const [confirmTarget, setConfirmTarget] = useState(null);
-  const [showInvoicePrompt, setShowInvoicePrompt] = useState(false);
-  const [invoiceNumber, setInvoiceNumber] = useState('');
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [newDate, setNewDate] = useState('');
   const [collapsedDays, setCollapsedDays] = useState({});
@@ -46,30 +43,12 @@ export default function ObjectDetail({
       onDelete(object.id);
     } else if (confirmTarget.type === 'material') {
       onDeleteMaterial(object.id, confirmTarget.dayId, confirmTarget.matId);
-    } else if (confirmTarget.type === 'invoice') {
-      onDeleteInvoice(object.id, confirmTarget.invoiceId);
     } else if (confirmTarget.type === 'day') {
       onDeleteDay(object.id, confirmTarget.dayId);
     } else if (confirmTarget.type === 'rezultatas') {
       if (onDeleteRezultatas) onDeleteRezultatas(confirmTarget.rezId);
     }
     setConfirmTarget(null);
-  };
-
-  const handleExportInvoice = () => {
-    setInvoiceNumber('');
-    setShowInvoicePrompt(true);
-  };
-
-  const handleConfirmInvoice = async () => {
-    const seller = await loadSellerInfo();
-    const objWithAllMaterials = {
-      ...object,
-      materials: allMaterials,
-    };
-    const invoiceRecord = generateInvoice(objWithAllMaterials, seller, invoiceNumber.trim());
-    onSaveInvoice(object.id, invoiceRecord);
-    setShowInvoicePrompt(false);
   };
 
   const handleAddDay = () => {
@@ -89,7 +68,6 @@ export default function ObjectDetail({
     if (!confirmTarget) return '';
     if (confirmTarget.type === 'object') return 'Ar tikrai norite ištrinti šį objektą?';
     if (confirmTarget.type === 'day') return 'Pašalinti šią dieną su visomis medžiagomis?';
-    if (confirmTarget.type === 'invoice') return 'Pašalinti šią sąskaitą?';
     if (confirmTarget.type === 'rezultatas') return 'Pašalinti šį rezultatą?';
     return 'Pašalinti šią medžiagą?';
   };
@@ -269,53 +247,6 @@ export default function ObjectDetail({
           }}>
             📋 Formuoti bendrą medžiagų kiekį
           </button>
-          <button className="btn-invoice" onClick={handleExportInvoice}>
-            📄 Eksportuoti sąskaitą (PDF)
-          </button>
-        </>
-      )}
-
-      {(object.invoices || []).length > 0 && (
-        <>
-          <div className="section-header" style={{ marginTop: 20 }}>
-            <h3>Sąskaitos</h3>
-          </div>
-          <div className="list">
-            {object.invoices.map((inv) => (
-              <div className="invoice-card" key={inv.id}>
-                <div className="invoice-icon" onClick={() => openInvoicePdf(inv)} title="Atsisiųsti PDF">
-                  <svg width="28" height="32" viewBox="0 0 28 32" fill="none">
-                    <path d="M2 0C0.9 0 0 0.9 0 2V30C0 31.1 0.9 32 2 32H26C27.1 32 28 31.1 28 30V8L20 0H2Z" fill="#E53935"/>
-                    <path d="M21 7V0L28 7H21Z" fill="#FFCDD2"/>
-                    <text x="14" y="22" textAnchor="middle" fill="white" fontSize="8" fontWeight="bold" fontFamily="Arial">PDF</text>
-                  </svg>
-                </div>
-                <div className="invoice-info" onClick={() => openInvoicePdf(inv)}>
-                  <div className="invoice-number">{inv.number}</div>
-                  <div className="invoice-date">{inv.date}</div>
-                </div>
-                {object.clientEmail && (
-                  <button
-                    className="btn-send-email"
-                    onClick={() => {
-                      openInvoicePdf(inv);
-                      const subject = encodeURIComponent(`Sąskaita faktūra ${inv.number}`);
-                      const body = encodeURIComponent(
-                        `Laba diena,\n\nSiunčiu sąskaitą faktūrą Nr. ${inv.number}.\nPrašome rasti ją prisegtuose dokumentuose.\n\nPagarbiai`
-                      );
-                      window.open(`mailto:${object.clientEmail}?subject=${subject}&body=${body}`, '_blank');
-                    }}
-                    title="Siųsti el. paštu"
-                  >✉️</button>
-                )}
-                <button
-                  className="material-delete"
-                  onClick={() => setConfirmTarget({ type: 'invoice', invoiceId: inv.id })}
-                  title="Pašalinti"
-                >✕</button>
-              </div>
-            ))}
-          </div>
         </>
       )}
 
@@ -354,27 +285,6 @@ export default function ObjectDetail({
             <div className="modal-actions">
               <button className="btn-secondary" onClick={() => setShowDatePicker(false)}>Atšaukti</button>
               <button className="btn-primary" onClick={handleConfirmAddDay}>Pridėti</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {showInvoicePrompt && (
-        <div className="modal-overlay" onClick={() => setShowInvoicePrompt(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <p style={{ fontWeight: 600 }}>Sąskaitos numeris</p>
-            <div className="form-group" style={{ marginBottom: 16 }}>
-              <input
-                type="text"
-                value={invoiceNumber}
-                onChange={(e) => setInvoiceNumber(e.target.value)}
-                placeholder="pvz. SF-2026-001"
-                autoFocus
-              />
-            </div>
-            <div className="modal-actions">
-              <button className="btn-secondary" onClick={() => setShowInvoicePrompt(false)}>Atšaukti</button>
-              <button className="btn-primary" onClick={handleConfirmInvoice}>Eksportuoti</button>
             </div>
           </div>
         </div>
