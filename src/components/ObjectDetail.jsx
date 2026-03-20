@@ -289,7 +289,7 @@ export default function ObjectDetail({
           <div className="list">
             {object.rezultatai.map((rez) => (
               <div className="db-item" key={rez.id} style={{ marginBottom: 4 }}>
-                <span>📊 {rez.data ? rez.data.split('T')[0] : ''} — {parseFloat(rez.suma)} m</span>
+                <span>📊 {rez.data ? rez.data.split('T')[0] : ''}</span>
                 <button
                   className="material-delete"
                   onClick={() => setConfirmTarget({ type: 'rezultatas', rezId: rez.id })}
