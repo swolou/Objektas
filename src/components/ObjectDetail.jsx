@@ -13,7 +13,6 @@ export default function ObjectDetail({
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [newDate, setNewDate] = useState('');
   const [collapsedDays, setCollapsedDays] = useState({});
-  const [summaryData, setSummaryData] = useState(null);
   const days = (object.days || []).sort((a, b) => b.date.localeCompare(a.date));
   const allMaterials = days.flatMap((d) => d.materials || []);
   const hasAnyMaterials = allMaterials.length > 0;
@@ -239,7 +238,6 @@ export default function ObjectDetail({
             const agg = aggregatedMaterials();
             const totalQty = agg.reduce((s, m) => s + m.quantity, 0);
             generateMaterialsSummaryPdf(object, agg);
-            setSummaryData(agg);
             if (onSaveRezultatas) {
               onSaveRezultatas(object.id, {
                 data: new Date().toISOString().split('T')[0],
@@ -250,34 +248,31 @@ export default function ObjectDetail({
             📋 Formuoti bendrą medžiagų kiekį
           </button>
 
-          {summaryData && (
-            <div className="summary-table-section">
-              <div className="summary-table-header">
-                <h3>Bendra medžiagų suvestinė</h3>
-                <button className="btn-close-summary" onClick={() => setSummaryData(null)}>✕</button>
-              </div>
-              <table className="summary-table">
-                <thead>
-                  <tr>
-                    <th>Nr.</th>
-                    <th>Pavadinimas</th>
-                    <th>Kiekis</th>
-                    <th>Vnt.</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {summaryData.map((m, idx) => (
-                    <tr key={idx}>
-                      <td>{idx + 1}</td>
-                      <td>{m.name}</td>
-                      <td>{m.quantity}</td>
-                      <td>{m.unit || 'm'}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+          <div className="summary-table-section">
+            <div className="summary-table-header">
+              <h3>Bendra medžiagų suvestinė</h3>
             </div>
-          )}
+            <table className="summary-table">
+              <thead>
+                <tr>
+                  <th>Nr.</th>
+                  <th>Pavadinimas</th>
+                  <th>Kiekis</th>
+                  <th>Vnt.</th>
+                </tr>
+              </thead>
+              <tbody>
+                {aggregatedMaterials().map((m, idx) => (
+                  <tr key={idx}>
+                    <td>{idx + 1}</td>
+                    <td>{m.name}</td>
+                    <td>{m.quantity}</td>
+                    <td>{m.unit || 'm'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </>
       )}
 
