@@ -47,11 +47,11 @@ async function initDb() {
     );
     CREATE TABLE IF NOT EXISTS kameros (
       id SERIAL PRIMARY KEY,
-      kameros VARCHAR(255) NOT NULL
+      kameros VARCHAR(255) NOT NULL UNIQUE
     );
     CREATE TABLE IF NOT EXISTS laidai (
       id SERIAL PRIMARY KEY,
-      laidai VARCHAR(255) NOT NULL
+      laidai VARCHAR(255) NOT NULL UNIQUE
     );
     CREATE TABLE IF NOT EXISTS rezultatas (
       id SERIAL PRIMARY KEY,
@@ -71,6 +71,10 @@ async function initDb() {
       account VARCHAR(50)
     );
   `);
+  try {
+    await pool.query(`CREATE UNIQUE INDEX IF NOT EXISTS kameros_kameros_key ON kameros (kameros)`);
+    await pool.query(`CREATE UNIQUE INDEX IF NOT EXISTS laidai_laidai_key ON laidai (laidai)`);
+  } catch (e) {}
   console.log('Database tables initialized');
 }
 
