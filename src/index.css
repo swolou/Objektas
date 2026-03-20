@@ -622,6 +622,81 @@ header h1 {
   background: #1d4ed8;
 }
 
+.summary-table-section {
+  margin-top: 16px;
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.summary-table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.summary-table-header h3 {
+  margin: 0;
+  font-size: 15px;
+}
+
+.btn-close-summary {
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #999;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.btn-close-summary:hover {
+  color: #e53e3e;
+}
+
+.summary-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.summary-table th {
+  text-align: left;
+  padding: 8px 6px;
+  border-bottom: 2px solid #e2e8f0;
+  font-weight: 600;
+  color: #4a5568;
+  font-size: 13px;
+}
+
+.summary-table td {
+  padding: 7px 6px;
+  border-bottom: 1px solid #edf2f7;
+}
+
+.summary-table tr:last-child td {
+  border-bottom: none;
+}
+
+.summary-table th:first-child,
+.summary-table td:first-child {
+  width: 40px;
+  text-align: center;
+}
+
+.summary-table th:nth-child(3),
+.summary-table td:nth-child(3) {
+  text-align: right;
+  width: 70px;
+}
+
+.summary-table th:nth-child(4),
+.summary-table td:nth-child(4) {
+  text-align: center;
+  width: 50px;
+}
+
 .modal-wide {
   width: 92%;
   max-width: 420px;
