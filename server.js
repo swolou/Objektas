@@ -16,6 +16,66 @@ if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, 'dist')));
 }
 
+async function initDb() {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS objektas (
+      id SERIAL PRIMARY KEY,
+      name VARCHAR(255),
+      address VARCHAR(255),
+      status VARCHAR(20) DEFAULT 'naujas',
+      notes TEXT,
+      client VARCHAR(255),
+      client_company VARCHAR(255),
+      client_code VARCHAR(50),
+      client_pvm VARCHAR(50),
+      client_address VARCHAR(255),
+      client_email VARCHAR(255),
+      phone VARCHAR(50),
+      created_at TIMESTAMP DEFAULT NOW()
+    );
+    CREATE TABLE IF NOT EXISTS dienos (
+      id SERIAL PRIMARY KEY,
+      objektas_id INTEGER REFERENCES objektas(id) ON DELETE CASCADE,
+      date DATE NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS medziagos (
+      id SERIAL PRIMARY KEY,
+      diena_id INTEGER REFERENCES dienos(id) ON DELETE CASCADE,
+      name VARCHAR(255) NOT NULL,
+      quantity NUMERIC(10,2) DEFAULT 0,
+      unit VARCHAR(10) DEFAULT 'm'
+    );
+    CREATE TABLE IF NOT EXISTS kameros (
+      id SERIAL PRIMARY KEY,
+      kameros VARCHAR(255) NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS laidai (
+      id SERIAL PRIMARY KEY,
+      laidai VARCHAR(255) NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS rezultatas (
+      id SERIAL PRIMARY KEY,
+      objektas_id INTEGER REFERENCES objektas(id) ON DELETE CASCADE,
+      data DATE NOT NULL,
+      suma NUMERIC(10,2) DEFAULT 0
+    );
+    CREATE TABLE IF NOT EXISTS pardavejas (
+      id SERIAL PRIMARY KEY,
+      company VARCHAR(255),
+      code VARCHAR(50),
+      pvm_code VARCHAR(50),
+      address VARCHAR(255),
+      phone VARCHAR(50),
+      email VARCHAR(255),
+      bank VARCHAR(255),
+      account VARCHAR(50)
+    );
+  `);
+  console.log('Database tables initialized');
+}
+
+initDb().catch((err) => console.error('DB init error:', err));
+
 // --- OBJEKTAI ---
 
 app.get('/api/objektai', async (req, res) => {
