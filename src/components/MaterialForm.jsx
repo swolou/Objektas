@@ -120,14 +120,17 @@ export default function MaterialForm({ editingMaterial, onSave, onBack }) {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.name.trim()) return;
-    onSave({
+    await onSave({
       name: form.name.trim(),
       quantity: parseFloat(form.quantity) || 0,
       unit: form.unit,
     });
+    if (!editingMaterial) {
+      setForm({ name: '', quantity: '', unit: 'm' });
+    }
   };
 
   const handleAddKamera = async () => {

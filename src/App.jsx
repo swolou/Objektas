@@ -87,13 +87,15 @@ export default function App() {
   const handleSaveMaterial = async (matData) => {
     if (editingMaterial) {
       await apiUpdateMaterial(editingMaterial.id, matData);
+      await refreshObjects();
+      setEditingMaterial(null);
+      setCurrentDayId(null);
+      setView('detail');
     } else {
       await apiAddMaterial(currentDayId, matData);
+      await refreshObjects();
+      setEditingMaterial(null);
     }
-    await refreshObjects();
-    setEditingMaterial(null);
-    setCurrentDayId(null);
-    setView('detail');
   };
 
   const handleDeleteMaterial = async (objId, dayId, matId) => {
